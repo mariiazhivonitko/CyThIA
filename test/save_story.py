@@ -1,0 +1,13 @@
+text = """
+In the city of Novus, a renowned architect named Alice Johnson was busy working on her latest project. Alice had been designing buildings for over 15 years and was well-known for her collaboration with her mentor, Robert Lee, who was also a famous architect. Robert had taught Alice everything she knew, and they remained close friends.
+
+Alice was married to David Johnson, a software engineer who worked at TechCorp. David was passionate about his work and often collaborated with his colleague, Emily Smith, a data scientist at TechCorp. Emily was also Alice’s best friend from college, where they studied together. She frequently visited Alice and David’s home, and they often discussed their work over dinner.
+
+Alice and David had a daughter, Sophie Johnson, who was 8 years old and loved spending time with her grandparents, John and Mary Johnson. John was David’s father, a retired professor, and Mary was a retired nurse. They lived in a neighboring town called Greenville and visited their family in Novus every weekend.
+
+One day, Alice received an invitation from the Novus City Council to present her latest building design. She was excited to showcase her work and immediately contacted Robert Lee to review her plans. Robert was delighted to help, as he had always admired Alice’s talent. Meanwhile, David was busy at TechCorp, where he and Emily were working on a new AI project under the supervision of their manager, Michael Brown.
+
+As the day of the presentation approached, Alice prepared her designs with Robert’s guidance. David and Sophie also attended the event to support Alice. The Novus City Council was impressed with her work and decided to approve the project, marking another success for Alice. After the event, the family celebrated with a dinner at their favorite restaurant, The Green Olive, where they were joined by Emily and Robert.
+"""
+with open("./rag_graph/input/story.txt", "w") as f:
+    f.write(text)
