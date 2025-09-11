@@ -6,65 +6,53 @@
 
 models:
   default_chat_model:
-    type: ollama_chat # or azure_openai_chat
+    type: openai_chat # or azure_openai_chat
     # api_base: https://<instance>.openai.azure.com
     # api_version: 2024-05-01-preview
-    #auth_type: api_key # or azure_managed_identity
-    #api_key: ${GRAPHRAG_API_KEY} # set this in the generated .env file
+    auth_type: api_key # or azure_managed_identity
+    api_key: ${GRAPHRAG_API_KEY} # set this in the generated .env file
     # audience: "https://cognitiveservices.azure.com/.default"
     # organization: <organization_id>
-    model: phi-3
-    max_tokens: 200
-    api_base: http://127.0.0.1:11434/v1
+    model: gpt-4-turbo-preview
     # deployment_name: <azure_model_deployment_name>
     # encoding_model: cl100k_base # automatically set by tiktoken if left undefined
-    # model_supports_json: true # recommended if this is available for your model.
-    concurrent_requests: 1 # max number of simultaneous LLM requests allowed
+    model_supports_json: true # recommended if this is available for your model.
+    concurrent_requests: 25 # max number of simultaneous LLM requests allowed
     async_mode: threaded # or asyncio
     retry_strategy: native
-    max_retries: 1
+    max_retries: 10
     tokens_per_minute: auto              # set to null to disable rate limiting
     requests_per_minute: auto            # set to null to disable rate limiting
-
-  parallelization:
-    stagger: 0.3
-
-  async_mode: threaded # or asyncio
-
   default_embedding_model:
-    type: ollama_embedding # or azure_openai_embedding
+    type: openai_embedding # or azure_openai_embedding
     # api_base: https://<instance>.openai.azure.com
     # api_version: 2024-05-01-preview
-    # auth_type: api_key # or azure_managed_identity
-    # api_key: ${GRAPHRAG_API_KEY}
-    api_base: http://127.0.0.1:11434/v1
+    auth_type: api_key # or azure_managed_identity
+    api_key: ${GRAPHRAG_API_KEY}
     # audience: "https://cognitiveservices.azure.com/.default"
     # organization: <organization_id>
-    model: bge-large
+    model: text-embedding-3-small
     # deployment_name: <azure_model_deployment_name>
     # encoding_model: cl100k_base # automatically set by tiktoken if left undefined
-    # model_supports_json: true # recommended if this is available for your model.
-    concurrent_requests: 1 # max number of simultaneous LLM requests allowed
+    model_supports_json: true # recommended if this is available for your model.
+    concurrent_requests: 25 # max number of simultaneous LLM requests allowed
     async_mode: threaded # or asyncio
     retry_strategy: native
-    max_retries: 1
+    max_retries: 10
     tokens_per_minute: null              # set to null to disable rate limiting or auto for dynamic
     requests_per_minute: null            # set to null to disable rate limiting or auto for dynamic
-    batch_size: 1 # number of texts to embed in a single request
-    match_max_tokens: 8192 # maximum number of tokens to embed in a single request
 
 ### Input settings ###
 
 input:
-  type: file # or blob
-  file_type: text # or csv
-  base_dir: "input"
-  file_encoding: utf-8
-  file_pattern: ".*\\.txt$$"
+  storage:
+    type: file # or blob
+    base_dir: "input"
+  file_type: text # [csv, text, json]
   
 
 chunks:
-  size: 300
+  size: 1200
   overlap: 100
   group_by_columns: [id]
 
@@ -82,8 +70,7 @@ cache:
 
 reporting:
   type: file # [file, blob, cosmosdb]
-  base_dir: "output/${timestamp}/reports"
-
+  base_dir: "logs"
 
 vector_store:
   default_vector_store:
@@ -91,10 +78,6 @@ vector_store:
     db_uri: output\lancedb
     container_name: default
     overwrite: True
-
-storage:
-  type: file # or blob
-  base_dir: "output/${timestamp}/artifacts"
 
 ### Workflow settings ###
 
@@ -132,18 +115,10 @@ community_reports:
   graph_prompt: "prompts/community_report_graph.txt"
   text_prompt: "prompts/community_report_text.txt"
   max_length: 2000
-  max_input_length: 7000
+  max_input_length: 8000
 
 embed_graph:
   enabled: false # if true, will generate node2vec embeddings for nodes
-  # num_walks: 10
-  # walk_length: 40
-  # window_size: 2
-  # iterations: 3
-  # random_seed: 597832
-
-cluster_graph:
-  max_cluster_size: 10
 
 umap:
   enabled: false # if true, will generate UMAP embeddings for nodes (embed_graph must also be enabled)
@@ -151,26 +126,21 @@ umap:
 snapshots:
   graphml: false
   embeddings: false
-  top_level_nodes: false
 
 ### Query settings ###
 ## The prompt locations are required here, but each search method has a number of optional knobs that can be tuned.
 ## See the config docs: https://microsoft.github.io/graphrag/config/yaml/#query
 
 local_search:
-  # text_unit_prop: 0.5
-  # community_prop: 0.1
-  # conversation_history_max_turns: 5
-  # top_k_mapped_entities: 10
-  # top_k_relationships: 10
-  # max_tokens: 12000
+  chat_model_id: default_chat_model
+  embedding_model_id: default_embedding_model
+  prompt: "prompts/local_search_system_prompt.txt"
 
 global_search:
-  # max_tokens: 12000
-  # data_max_tokens: 12000
-  # map_max_tokens: 1000
-  # reduce_max_tokens: 2000
-  # concurrency: 32
+  chat_model_id: default_chat_model
+  map_prompt: "prompts/global_search_map_system_prompt.txt"
+  reduce_prompt: "prompts/global_search_reduce_system_prompt.txt"
+  knowledge_prompt: "prompts/global_search_knowledge_system_prompt.txt"
 
 drift_search:
   chat_model_id: default_chat_model
