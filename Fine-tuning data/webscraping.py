@@ -12,7 +12,7 @@ for para in doc.paragraphs:
         urls.append(para.text)
 
 #Let's extract the first url and scrape it
-url = urls[4]
+url = urls[-1]
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -75,31 +75,36 @@ for question, answer in question_answer_pairs:
 
 # for url = urls[4] :"https://cybertalents.com/blog/41-questions-to-help-you-prepare-for-a-cybersecurity-interview"
 # Loop through all h3 > span (questions)
+
+
 for h3 in soup.find_all("h3"):
-    span = h3.find("span")
-    if not span:
+    # Extract question text (handles span, b, strong, etc.)
+    question = h3.get_text(" ", strip=True)
+    if not question:
         continue
-    question = span.get_text(strip=True)
 
     answer_parts = []
     for sibling in h3.find_next_siblings():
         if sibling.name == "h3":  # stop at next question
             break
-        if sibling.name == "p":
-            spans = sibling.find_all("span")
-            if spans:
-                
-                text_parts = [sp.get_text(strip=True) for sp in spans if sp.get_text(strip=True)]
-                if text_parts:
-                    answer_parts.extend(text_parts)
+
+        if sibling.name in ["p", "div", "b", "strong"]:
+            text = sibling.get_text(" ", strip=True)
+            if text:
+                answer_parts.append(text)
+
+        elif sibling.name in ["ul", "ol"]:
+            for li in sibling.find_all("li"):
+                text = li.get_text(" ", strip=True)
+                if text:
+                    answer_parts.append("• " + text)
+
     if answer_parts:
         answer = " ".join(answer_parts).strip()
         question_answer_pairs.append((question, answer))
 
 # Convert to DataFrame
 df = pd.DataFrame(question_answer_pairs, columns=["Question", "Answer"])
-
-# Save to Excel
 df.to_excel("cybersecurity_qa.xlsx", index=False)
 
-print("Saved question-answer pairs to cybersecurity_qa.xlsx")
+print(f"Extracted {len(df)} Q&A pairs and saved to cybersecurity_qa.xlsx")
