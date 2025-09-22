@@ -1,0 +1,4 @@
+==== AVERAGE SCORES ====
+Semantic similarity: 0.7823
+BLEU score: 0.0370
+BERTScore F1: 0.2008
