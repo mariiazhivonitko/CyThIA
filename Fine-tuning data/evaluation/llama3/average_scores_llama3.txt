@@ -1,3 +1,0 @@
-Semantic similarity: 0.7600
-BLEU score: 0.0328
-BERTScore F1: 0.1912

@@ -2,3 +2,6 @@
 Semantic similarity: 0.7823
 BLEU score: 0.0370
 BERTScore F1: 0.2008
+ROUGE-1 F1: 0.3131
+ROUGE-2 F1: 0.1049
+ROUGE-L F1: 0.2041
