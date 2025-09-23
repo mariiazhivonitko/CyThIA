@@ -1,0 +1,7 @@
+==== AVERAGE SCORES ====
+Semantic similarity: 0.7533
+BLEU score: 0.0323
+BERTScore F1: 0.1958
+ROUGE-1 F1: 0.3093
+ROUGE-2 F1: 0.1016
+ROUGE-L F1: 0.1993
