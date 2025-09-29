@@ -11,8 +11,8 @@ import csv
 # ----------------------
 # CONFIG
 # ----------------------
-BASE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-FINETUNED_MODEL = "mariiazhiv/CyTHIA-Mixtral-8x7B"  # folder with LoRA adapters and tokenizer
+BASE_MODEL = "meta-llama/Llama-2-13b-chat-hf"
+FINETUNED_MODEL = "mariiazhiv/CyThIA-llama2-13B-chat"  # folder with LoRA adapters and tokenizer
 HF_DATASET = "mariiazhiv/cybersecurity_qa"  # Hugging Face dataset repo
 TEST_SPLIT = "test"
 MAX_TOKENS = 100
@@ -30,14 +30,13 @@ if tokenizer.pad_token is None:
 # ----------------------
 # LOAD BASE MODEL
 # ----------------------
-print("Loading base model on CPU (safe mode)...")
-# load on CPU to avoid meta tensors
+print("Loading base model...")
 model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
-    device_map={"": "cpu"},                # ensure tensors are actual CPU tensors
-    torch_dtype=torch.float32,            # load in fp32 on CPU for safe init
-    low_cpu_mem_usage=True               # avoid lazy/meta init
+    device_map="auto",
+    torch_dtype=torch.bfloat16 if DEVICE=="cuda" else torch.float32
 )
+
 # ----------------------
 # RESIZE TOKEN EMBEDDINGS TO MATCH TOKENIZER
 # ----------------------
@@ -51,11 +50,6 @@ if model.get_input_embeddings().num_embeddings != len(tokenizer):
 print("Loading LoRA adapters...")
 model = PeftModel.from_pretrained(model, FINETUNED_MODEL)
 model.eval()
-
-# now move/cast model to target device
-if DEVICE == "cuda":
-    # move to GPU and cast to float16 (fp16). If you prefer bfloat16 and your GPU supports it, change here.
-    model = model.to(torch.bfloat16).to(DEVICE)
 
 # ----------------------
 # LOAD TEST DATASET FROM HF

@@ -1,0 +1,23 @@
+model-00014-of-00019.safetensors: 100%|________| 4.90G/4.90G [00:18<00:00, 260MB/s]
+model-00015-of-00019.safetensors: 100%|________| 4.98G/4.98G [00:19<00:00, 251MB/s]
+.stanford.edu/~johnhew/vocab-expansion.html. To disable this, use `mean_resizing=Fa
+lse`
+The new lm_head weights will be initialized from a multivariate normal distribution
+ that has old embeddings' mean and covariance. As described in this article: https:
+//nlp.stanford.edu/~johnhew/vocab-expansion.html. To disable this, use `mean_resizi
+ng=False`
+Loading LoRA adapters...
+adapter_config.json: 100%|________________________| 809/809 [00:00<00:00, 5.97MB/s]
+adapter_model.safetensors: 100%|_________________| 579M/579M [00:03<00:00, 173MB/s]
+Some parameters are on the meta device because they were offloaded to the cpu.
+Traceback (most recent call last):
+  File "/workspace/fine-tuning/evaluation_mixtral.py", line 58, in <module>
+    model = model.to(torch.bfloat16).to(DEVICE)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miniconda3/envs/py3.11/lib/python3.11/site-packages/accelerate/big_mo
+deling.py", line 458, in wrapper
+    raise RuntimeError("You can't move a model that has some modules offloaded to c
+pu or disk.")
+RuntimeError: You can't move a model that has some modules offloaded to cpu or disk
+.
+root@f155d8c7a2af:/workspace/fine-tuning# ^
