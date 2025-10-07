@@ -1,0 +1,931 @@
+CTI-HAL: A Human-Annotated Dataset for
+Cyber Threat Intelligence Analysis
+Sofia Della Penna, Roberto Natella, Vittorio Orbinato, Lorenzo Parracino, Luciano Pianese
+DIETI, Universit `a degli Studi di Napoli Federico II, Naples, Italy
+{sofia.dellapenna, roberto.natella, vittorio.orbinato, lorenzo.parracino, luciano.pianese }@unina.it
+Abstract
+Organizations are increasingly targeted by Advanced
+Persistent Threats (APTs), which involve complex,
+multi-stage tactics and diverse techniques. Cyber Threat
+Intelligence (CTI) sources, such as incident reports and
+security blogs, provide valuable insights, but are often
+unstructured and in natural language, making it diffi-
+cult to automatically extract information. Recent studies
+have explored the use of AI to perform automatic extrac-
+tion from CTI data, leveraging existing CTI datasets for
+performance evaluation and fine-tuning. However, they
+present challenges and limitations that impact their effec-
+tiveness. To overcome these issues, we introduce a novel
+dataset manually constructed from CTI reports and struc-
+tured according to the MITRE ATT&CK framework. To
+assess its quality, we conducted an inter-annotator agree-
+ment study using Krippendorff’s alpha, confirming its re-
+liability. Furthermore, the dataset was used to evaluate a
+Large Language Model (LLM) in a real-world business
+context, showing promising generalizability.
+1 Introduction
+The complexity of cyberattacks faced by organizations
+is constantly increasing. Today, companies must face
+increasingly sophisticated threats, commonly known as
+APTs. In this context, reactive security strategies, which
+respond only after an attack has occurred, are no longer
+sufficient. As a result, there is a growing shift towards
+proactive security strategies that aim to anticipate the
+moves of attackers and neutralize threats before they
+manifest.
+To develop proactive security strategies, it is essential
+to gather information on APTs through CTI sources. CTI
+provides detailed analyses that aid in preventing and re-
+sponding to cyberattacks by identifying trends, patterns,
+and relationships across multiple data sources. This in-
+telligence enables security teams to take targeted, data-driven actions to enhance their defense posture effec-
+tively [23]. CTI supports a variety of activities, including
+Adversary Emulation andRed Teaming ,Threat Hunting ,
+Risk Assessment , and Incident Response , making it a cor-
+nerstone of modern cybersecurity strategies.
+The information collected from CTI sources can be
+structured using frameworks like MITRE ATT&CK
+[24], a knowledge base designed to understand cyber
+threats by analyzing cybercriminal behaviors. MITRE
+ATT&CK provides a standardized language that fa-
+cilitates information sharing among security teams.
+However, automatically transforming unstructured CTI
+sources, written in natural language, into a structured
+format for security processes remains a significant chal-
+lenge.
+Some studies have attempted to overcome this limi-
+tation, by extracting structured CTI from unstructured
+sources with NLP techniques, and more recently LLMs
+[25] [2] [5]. Despite their potential, several challenges
+persist. A key issue is the tendency to misinterpret
+benign sentences as anomalous, incorrectly identifying
+TTPs (Tactics, Techniques, and Procedures) that are not
+actually present. Another significant challenge is the
+phenomenon of “ hallucinations ”, where models fabri-
+cate nonexistent facts or produce inappropriate informa-
+tion in an attempt to generate a response [26].
+Most studies use CTI datasets to evaluate the over-
+all performance of AI-based CTI analyzers and to fine-
+tune them. However, these datasets often have signif-
+icant limitations, including limited availability, the use
+ofdocument-level rather than statement-level granularity,
+which results in a loss of correspondence between indi-
+vidual sentences and the identified TTPs, and reliance
+on short and generic TTP descriptions from the MITRE
+ATT&CK Knowledge Base [24] rather than detailed CTI
+reports written by cybersecurity analysts.
+In this work, we address these challenges by conduct-
+ing a detailed review of existing datasets and introduc-
+ingCTI-HAL (CTI Human-Annotated Labels ), a newarXiv:2504.05866v1  [cs.CR]  8 Apr 2025Dataset Availability Human-Labeled Granularity Format # Techniques Source MITRE ATT&CK
+D-IT (Chen et al., 2024) [1] ![2] % statement level csv 201 MITRE ATT&CK KB v14.1
+D-PE (Chen et al., 2024) [1] ![2] N/A statement level csv 189 real CTI reports v14.1
+TTPHunter [Sentence-Based] (Rani et al., 2023) [3] ![4] % statement level csv 50 MITRE ATT&CK KB v13.1
+TTPHunter [Document-Based] (Rani et al., 2023) [3] % ! document level N/A N/A 50 real CTI reports v13.1
+TTPXHunter [Sentence-TTP] (Rani et al., 2024) [5] % % statement level N/A 193 MITRE ATT&CK KB v15.1
+TTPXHunter [Report-TTP] (Rani et al., 2024) [5] % ! document level N/A N/A 149 real CTI reports v15.1
+CTI-to-MITRE with NLP (Orbinato et al., 2022) [6] ![7] % statement level csv 188 MITRE ATT&CK KB v11.3
+rcATT (Legoy et al., 2020) [8] ![9] % document level csv 215 MITRE ATT&CK KB v7.0
+MITREtrieval (Huang et al., 2024) [10] ![11] N/A document level json 165 mixed v10.1
+TRAM [12] ![13] ! statement level json 50 real CTI reports v13.1
+IntelEX Ground Truth (Xu et al., 2023) [14] ![15] ! document level docx 171 16 real CTI reports v15.1
+LADDER (Alam et al., 2023) [16] ![17] ! statement level csv 31 real CTI reports (Android malware) v13.1
+LLMCloudHunter (Schwartz et al., 2024) [18] % ! N/A N/A N/A 12 real CTI reports (cloud) v15.1
+aCTIon (Siracusano et al., 2023) [19] % ! N/A N/A N/A 204 real CTI reports v13.1
+AttacKG+ (Zhang et al., 2024) [20] % ! N/A N/A N/A real CTI reports v14.1
+CTI-ATE (Alam et al., 2024) [21] ![22] % statement level tsv 115 MITRE ATT&CK KB v15.1
+CTI-HAL ! ! statement level json 116 81 real CTI reports v15.1
+Table 1: CTI Dataset Overview
+CTI dataset1, well-suited for the evaluation of NLP tech-
+niques. Our dataset includes reports of various sizes,
+with annotations on specific statements, allowing the as-
+sessment of a model’s ability to identify only the most
+relevant parts. Furthermore, it ensures traceability, facil-
+itates cross-referencing , and maintains high-quality stan-
+dards through multiple annotators and cross-validation .
+As a result, this new CTI dataset represents a versatile
+tool for research and applications in cybersecurity.
+We applied our dataset in a real-world business con-
+text, using it to evaluate the performance of an automa-
+tion flow, based on an LLM, to extract TTPs from un-
+structured commercial CTI feeds. The lessons learned
+from this application are as follows:
+• Datasets have a significant impact on the accuracy
+of LLM under study. Compared to previous studies,
+our analysis found large differences, depending on
+the size and topics of CTI reports.
+• The evaluated LLM struggles more with analyzing
+large CTI reports, whereas when analyzing concise
+reports, it achieves significantly better performance.
+• When applying the LLM to commercial CTI feeds,
+we obtain results comparable to those achieved with
+our dataset, demonstrating promising generalizabil-
+ity.
+This paper is structured as follows. Section 2 re-
+views related work, providing an overview of existing
+approaches and their limitations. Section 3 describes the
+approach used to create the dataset, including a classifi-
+cation summary of the collected data. Section 4 focuses
+on the quality assessment of the dataset, while Section
+5 presents the application of the dataset in a real-world
+business context along with the evaluation results. Fi-
+nally, Section 6 concludes the paper with a discussion of
+findings and future research directions.
+1https://github.com/dessertlab/CTI-HAL2 Related Work
+Several datasets have been proposed in the literature to
+assist in training and evaluating models for the extraction
+of TTPs from CTI reports. Table 1 presents an overview
+of these datasets.
+Availability . Publicly accessible datasets are essential
+to foster reproducibility, enable comparative evaluations,
+and support advancements in the field. However, some
+studies did not release their datasets at the time of writ-
+ing this paper [3] [5] [18] [19] [20], limiting the ability
+to reproduce and validate their findings, and hindering
+further research.
+Human-Labeled . The use of human-annotated
+datasets is crucial, particularly in the context of LLMs
+[27] [28]. Human-labeled data ensures a higher de-
+gree of reliability compared to automated approaches.
+Some studies bypass this step by directly referencing
+the MITRE ATT&CK Knowledge Base (KB) [1] [3] [5]
+[6] [8] [22]. The KB provides short paragraphs to de-
+scribe examples of attack techniques, tools, and cam-
+paigns [24]. Therefore, these studies only rely on brief
+technique descriptions, but do not consider the wider
+context. In practice, real CTI reports provide much larger
+descriptions that include details on the adversary’s mo-
+tivations and operational context. As a result, relying
+solely on the KB’s predefined descriptions may lead to
+oversimplified threat representations that do not capture
+the full complexity of real-world cyber threats.
+Others include human annotations on real CTI reports,
+often involving cybersecurity experts or multiple anno-
+tators to enhance validation [3] [5] [12] [14] [16] [18]
+[19] [20]. In these cases, real CTI reports are used as
+the primary source for annotation, sometimes focusing
+on specific cybersecurity topics, such as on Android and
+cloud attack techniques [16] [18]. Nonetheless, none of
+these studies provide an inter-annotator agreement eval-
+uation to assess the quality of the annotations, leaving a
+2Figure 1: Workflow
+gap in evaluating the consistency and reliability of their
+datasets.
+Granularity . The level of granularity in dataset an-
+notations plays a critical role. Using a statement-level
+approach [1] [3] [5] [6] [12] [16] [21], rather than a
+document-level one [3] [5] [8] [10] [14], significantly
+impacts the precision of CTI analysis. Document-level
+granularity maps a list of TTPs to a group of CTI reports,
+without explicitly tracking which specific sentences con-
+tain TTP-relevant information. As a result, this approach
+lacks the necessary contextual linkage between the ex-
+tracted techniques and their textual evidence, reducing
+the interpretability. In contrast, statement-level granu-
+larity ensures that each identified technique is explicitly
+linked to its corresponding textual evidence. This bidi-
+rectional traceability enhances interpretability and al-
+lows for more precise evaluations. For the remainder of
+this work, the terms statement andsentence will be used
+interchangeably.
+Considering the limitations identified in previous stud-
+ies, our work aims to address these gaps. Our dataset is
+publicly available in JSON format and covers 116 tech-
+niques. The CTI reports used for its creation span various
+sectors, ensuring broader coverage of real-world scenar-
+ios. These reports also cover multiple APT groups, pro-
+viding a diverse and comprehensive representation of ad-
+versary behaviors. Two annotators analyzed the reports
+to identify the TTPs within them, and the results were
+validated using inter-annotator agreement techniques.
+The annotations are performed at the sentence level, en-
+abling a fine-grained mapping of techniques.
+3 Methodology
+We built CTI-HAL by carefully analyzing and manually
+annotating real CTI reports written in natural language.
+This approach is essential for creating an accurate and
+accessible dataset, providing a valuable resource to sup-
+port threat intelligence activities.
+The datasets discussed in Section 2 present some lim-
+itations. Some focus only on text fragments, failing to
+preserve the context of the attack described in the re-
+port, while others adopt a document-level granularity, as-
+sociating an entire document with a list of TTPs with-
+out specifying the text portions where they are men-tioned. These limitations hinder the application of AI
+techniques.
+To overcome these limitations, we chose to directly
+annotate the documents using a statement-level ap-
+proach. Each sentence containing information related to
+a TTP was associated with the corresponding technique
+ID from the MITRE ATT&CK framework, along with
+auxiliary information. This approach also allowed us
+to maintain bidirectional traceability between text frag-
+ments in the dataset and their specific locations in the
+original document.
+The source of reports used to create the dataset is the
+Adversary Emulation Library [29], an open-source li-
+brary that provides emulation plans for some attack cam-
+paigns, designed to allow organizations to test and eval-
+uate their defensive capabilities. Among the documents
+provided by the library, we analyzed those related to the
+following APTs: APT29 [30] [31], Carbanak [32] [33],
+FIN6 [34] [35], FIN7 [36] [37], OilRig [38] [39], Sand-
+worm [40] [41], and WizardSpider [42] [43]. We ana-
+lyzed a total of 81 real CTI reports, excluding the ones
+that were unavailable.
+The adopted approach involves analyzing CTI reports
+to identify sentences containing references to one or
+more of the MITRE ATT&CK TTPs. To identify the por-
+tions to annotate, we focused on technical terms related
+to key elements such as known attack techniques , spe-
+cific types of malware , names of tools used by attackers,
+and the presence of particular file extensions , which can
+indicate malicious files or links to malware. These as-
+pects were identified based on the previous study of the
+MITRE ATT&CK framework and through queries on the
+MITRE ATT&CK KB. This approach enabled us to more
+accurately identify the relevant text portions for annota-
+tion, ensuring greater precision and consistency in the
+extracted data.
+The workflow consists of three steps, shown in Figure
+1. These steps are described in detail below:
+1.Annotation : we manually analyzed the CTI report
+in PDF format identifying the sentences that refer-
+ence TTPs. For each of these sentences, we associ-
+ated the corresponding MITRE ATT&CK technique
+ID. This information is reported as an annotation
+within the PDF.
+3(a) CTI Report
+(b) Markdown format
+ (c) JSON format
+Figure 2: Example of the application of the workflow
+2.Conversion : the annotated PDF is automatically
+converted to a Markdown file. The file contains the
+text portions of the document along with their re-
+spective annotations. Each text-annotation pair is
+assigned an identifying token to facilitate parsing in
+the subsequent step.
+3.Standardization : the data in the Markdown files
+is processed through a transformation using Python
+scripts, resulting in a dataset composed of JSON
+files, with each file representing a report.
+The described workflow was followed by two indepen-
+dent annotators, each working on separate documents. A
+subset of documents was used to evaluate the quality of
+the annotations, as detailed in Section 4.
+The dataset creation process took eight weeks, with
+periodic meetings held every two weeks to monitor and
+discuss progress.
+3.1 Example
+We present an example of the application of the de-
+scribed approach. In particular, we consider the report:
+“Big Game Hunting with Ryuk: Another Lucrative Tar-
+geted Ransomware ” [44].
+In the Annotation phase, an annotation is added to each
+sentence in the document that contains TTP-related in-
+formation.
+An example is shown in Figure 2a, describing the ex-
+ecution of a PowerShell script. Once executed, the scriptconnects to a remote IP address, downloads a reverse
+shell, and executes it on the compromised host. For
+this reason, one of the identified techniques is T1059.001
+(Command and Scripting Interpreter: PowerShell ) [45].
+Each annotation consists of the following elements:
+•ID: distinguishes each annotation within the docu-
+ment.
+•SOURCE : specifies whether the annotation refers
+to a text or an image.
+•TACTIC : the tactic identified.
+•TECHNIQUE : the technique identified.
+•SUB-TECHNIQUE : the sub-technique identified.
+•DESCRIPTION : description of the highlighted
+text and the identified technique.
+•TOOL : any tools used, whether malicious software
+developed by APTs for specific purposes or red
+teaming toolkits employed in attacks.
+•NOTES : any extra details to preserve the context of
+the document.
+•LINK : link to other annotations enables tracking
+the sequence of techniques employed by the at-
+tacker.
+4(a) Techniques
+(b) Tools
+Figure 3: Distribution of techniques and tools by number of occurrences.
+In the Conversion phase, the annotated document is
+transformed into a Markdown file using pdfannots [46].
+Figure 2b shows how an annotation appears in Mark-
+down format.
+In the Standardization phase, we used Python scripts
+to organize the collected data, enabling the creation of
+the dataset of annotations in JSON format. Figure 2c
+shows the structure of the JSON file for an annotation,
+which includes the following entries:
+•CONTEXT : The highlighted anomalous sentence.
+•TECHNIQUE : The associated technique.
+•METADATA : All additional information, includ-
+ingpage number ,id,source ,tactic ,sub-technique ,
+description ,tool,notes , and link.
+3.2 Classification Summary
+After completing the dataset creation process, it is pos-
+sible to summarize the classification results. Table 2
+presents, for each APT, the number of documents an-
+alyzed, the average number of annotated sentences per
+document, and the average number of techniques identi-
+fied per document. The dataset covers both nation-stateAPT groups and cybercriminal organizations, spanning
+various sectors such as energy, finance, telecommunica-
+tions, intelligence, and government. This diversity en-
+sures a comprehensive representation of threats across
+different domains, enhancing the dataset’s applicability
+to real-world cybersecurity scenarios.
+APT # Docs # Sentences (avg) # Techniques (avg)
+APT29 (L) 12 24 21
+APT29 (S) 12 24 24
+Carbanak 10 29 27
+FIN6 11 25 23
+FIN7 18 15 14
+OilRig 8 22 22
+Sandworm 7 12 11
+WizardSpider 3 21 20
+Table 2: Average sentences and techniques per APT
+The dataset includes a total of 116 techniques , 104
+sub-techniques , and 111 tools . To provide further in-
+sights into the dataset, we present a histogram where
+each bar represents the number of techniques that ap-
+pear a specific number of times [Figure 3a]. The i-th
+bar indicates how many techniques occur itimes in the
+dataset, while the “20 +” column aggregates the count of
+techniques that appear more than 20 times. From the his-
+5togram, it is evident that many techniques appear only
+once, highlighting their more specialized and specific
+nature. However, there are also numerous techniques
+that appear more than 20 times, indicating that certain
+techniques are more common and frequently used across
+multiple attacks. Among those that appear more than
+20 times, some of the most common techniques include
+T1059 (Command and Scripting Interpreter ), where ad-
+versaries may abuse interpreters to execute commands or
+scripts [47]; T1566 (Phishing ), where adversaries may
+send phishing messages to gain access to victim systems
+[48]; T1027 (Obfuscate Files or Information ), where ad-
+versaries may attempt to make a file difficult to discover
+or analyze by obfuscating its contents on the system [49];
+T1105 (Ingress Tool Transfer ), where adversaries may
+transfer tools or other files from an external system into
+a compromised environment [50]; and T1071 (Applica-
+tion Layer Protocol ), where adversaries may communi-
+cate using application layer protocols to avoid detection
+or network filtering by blending in with existing traffic
+[51].
+We also present the same type of histogram to repre-
+sent the distribution of identified tools based on the num-
+ber of occurrences [Figure 3b]. In this case, the “10 +”
+column aggregates the count of tools that appear more
+than 10 times. In this case, many tools appear only once,
+highlighting the tendency of APTs to use specific tools
+for targeted actions. There are also tools that are used
+more extensively, as well as tools that are specific to cer-
+tain APTs, which appear multiple times within the same
+document. Among those that appear more than 10 times,
+some of the most common tools include S0030 (Car-
+banak ), a full-featured remote backdoor intended for es-
+pionage, data exfiltration, and providing remote access
+to infected machines [52]; S0046 (CozyDuke ), a modu-
+lar malware platform whose backdoor component can be
+instructed to download and execute a variety of modules
+with different functionality [53]; S0050 (CosmicDuke ), a
+malware [54] that collects information from the infected
+host and exfiltrates it to a C2 server; S0154 (Cobalt
+Strike ), a commercial, full-featured remote access tool
+[55]; and S0053 (SeaDuke ), a malware [56] used as a
+secondary backdoor for victims already compromised by
+CozyDuke .
+In conclusion, our dataset encompasses a wide range
+oftechniques andtools . Analyzing the most common
+techniques andtools reveals distinct patterns in how at-
+tacks are conducted. For example, attackers often use
+phishing to gain access to victim hosts, after which they
+transfer tools or scripts, collect sensitive information,
+and exfiltrate it. These operations can be performed ei-
+ther with custom tools developed by the attackers or by
+using red teaming toolkits like Cobalt Strike [55].4 Quality Assessment
+Most of the datasets discussed in Section 2 lack valida-
+tion of the quality of their annotations, which can lead to
+unreliable results.
+To ensure the reliability of the dataset, we emphasized
+the importance of its quality. We employed the inter-
+annotator agreement technique, where two independent
+annotators followed the same workflow described in Sec-
+tion 3 on the same CTI reports. Since the annotations
+were performed manually, they are prone to human er-
+rors.
+We conducted quality assessment using reports related
+to APT29 [31] [30]. To assess the degree of agree-
+ment between the two annotators, referred to here as L
+andS, we used Krippendorff’s Alpha coefficient , a mea-
+sure of inter-annotator reliability that tests the agreement
+between annotators on categorical, ordinal, or nominal
+data.
+4.1 Krippendorff’s Alpha coefficient
+Krippendorff’s alpha is a measure of inter-annotator reli-
+ability used to determine the level of agreement between
+two or more annotators [57].
+The formula to calculate it is shown in Equation 1.
+α=1−Do
+De(1)
+Where:
+•Do(Observed Discordance ): the proportion of dis-
+cordant annotations among the annotators.
+•De(Expected Discordance ): the discordance that
+would be expected if the annotations were indepen-
+dent.
+TheObserved Discordance (Do) [58] is the proportion
+of disagreements between annotators, counting the num-
+ber of times annotators choose different classifications
+out of the total number of annotations (Equation 2).
+Do=No. of discordances
+No. of annotations(2)
+The Expected Discordance (De) [58] is based on the
+probability that two annotators choose the same category
+randomly. Its calculation relies on the relative frequency
+of the annotated categories, estimating how often they
+would coincide by chance (Equation 3).
+De=1−Pe (3)
+where Perepresents the Expected Likelihood of Agree-
+ment , calculated as the sum of the products of the relative
+6Value of α Interpretation Details
+α<0 Systematic Disagreement There is a systematic disagreement between annotators,
+greater than what would be expected by chance.
+0≤α<0.2 Poor Agreement The agreement is minimal and not better than what could
+be expected by chance.
+0.2≤α<0.4 Fair Agreement The agreement is slightly better than chance but still insuf-
+ficient for many practical applications.
+0.4≤α<0.6 Moderate Agreement The agreement is acceptable in some contexts but often re-
+quires improvement.
+0.6≤α<0.8 Substantial Agreement The agreement is considered good for most applications.
+0.8≤α≤1 Perfect Agreement There is a high level of agreement between annotators.
+Table 3: Classification of Krippendorff’s αvalues
+likelihood of each category assigned by the two annota-
+tors. The relative probabilities reflect how often anno-
+tators attribute a specific category during the annotation
+process.
+The values of Krippendorff’s alpha vary between −1
+and 1: a value of 1 indicates unanimous agreement
+among the annotators, 0 suggests that classifications oc-
+cur by chance and negative values indicate that the an-
+notators disagree. Table 3 presents the classification of
+alpha values and their interpretation.
+4.2 Similarity Metrics
+When identifying a sentence with relevant informational
+content, annotators may not highlight exactly the same
+portion of text. This can lead to one annotator selecting
+only a subsection of what the other has highlighted or
+to variations in the number of words chosen. To analyze
+these overlaps in the highlighted text more accurately, we
+adopted the following textual Similarity Metrics :
+•Sequence Matcher [59]: measures the syntactic
+similarity between two strings by comparing their
+literal content.
+•BLEU [60]: assesses similarity based on n-gram
+precision, that is how closely a sequence of words
+in a target sentence matches a reference sentence.
+•Embedding Distance : measures the similarity be-
+tween two texts using word vector representa-
+tions called word embeddings, through SpaCy [61].
+SpaCy’s encore web smmodel [62] was chosen
+because it represents an ideal compromise between
+efficiency and accuracy, especially for short texts.
+Each pair of annotations evaluated using similarity
+metrics is assigned a score that reflects the degree of cor-
+respondence between the highlighted texts. A low score
+indicates poor similarity between the two text portions,
+while a high score indicates strong similarity. To ensurethat annotation pairs refer to the same portion of text, we
+applied an acceptance threshold : annotations that do not
+meet this value are discarded, as they are considered ir-
+relevant. In some cases, a sentence identified by one an-
+notator could be associated with multiple sentences iden-
+tified by the other, each with different scores. To ensure
+that only the most relevant matches were considered, we
+implemented a filter to select annotation pairs with the
+highest similarity score, ensuring that only the most con-
+sistent ones were included.
+4.3 Results
+The analysis described in the previous section was ap-
+plied to all CTI reports from the Adversary Emulation
+Library related to APT29.
+The average Krippendorff’s alpha values for each sim-
+ilarity metric are presented in Figure 4. The overall av-
+erage, calculated as the mean of the average values from
+the three metrics, is 0 .70. This indicates a Substantial
+Agreement between the annotators. This result suggests
+that, despite some variations in individual annotations,
+there is significant consistency in the interpretations of
+the documents. These findings confirm the reliability of
+the collected information and, consequently, the quality
+of the dataset, providing a solid foundation for further
+studies and analyses.
+For the sake of clarity, we provide an example of a
+comparison between annotations for the document “ Not
+So Cozy: An Uncomfortable Examination of a Suspected
+APT29 Phishing Campaign ” [63], which was indepen-
+dently analyzed by both annotators, as previously de-
+tailed. For each metric, the number of annotations that
+share the same highlighted text, referred to as ’ Common
+annotations ’, and those that match both the text and the
+identified technique, referred to as ’ Concordant annota-
+tions ’ are reported. In this case, annotator L produced
+22 annotations, while annotator S produced 19. Table 4
+presents the number of common and concordant annota-
+7Figure 4: APT29 - Krippendorff’s α
+tions identified using each similarity metric, along with
+the corresponding Krippendorff’s alpha value.
+Metric Common Concordant α Agreement Level
+Sequence Matcher 11 8 0.67 Substantial
+BLEU 12 9 0.69 Substantial
+Embedding Distance 9 6 0.60 Substantial
+Table 4: Krippendorff’s αfor the Example Document
+The average Krippendorff’s alpha value is 0 .65, indi-
+cating a Substantial Agreement between the annotators.
+5 Evaluation
+Companies are often targeted by malicious actors with
+different objectives and characteristics (e.g., cybercrim-
+inals, hacktivists, and industrial espionage). Since these
+actors have distinct purposes, it is challenging for com-
+panies to defend themselves effectively. One of the main
+goals of companies is to recognize TTPs from targeted
+commercial feeds to develop appropriate defenses.
+We collaborated with a large enterprise in the logistics
+domain2to analyze APTs specific to that sector. The
+company implemented an automation flow, based on
+an LLM, to structure the information from commercial
+CTI feeds. The model used was Claude 3 Haiku
+(anthropic.claude-3-haiku-20240307-v1:0 )
+[64], which was instructed to detect TTPs in CTI reports.
+Our dataset was used as ground truth to evaluate the
+model.
+2Anonymous for confidentiality reasons.In the case study, CTI reports are written in natu-
+ral language, are transmitted by email in PDF format,
+and include IoCs. These data are first normalized into a
+standard format and then analyzed through the following
+stages:
+1.Email Parsing : CTI data are extracted from the
+email.
+2.IoC Analysis : IoCs are analyzed to obtain a list of
+hashes, IP addresses, and domains.
+3.PDF Analysis : using Claude 3 Haiku [64], the au-
+tomation flow analyzes the reports and generates a
+JSON file for each report, with information on the
+identified attack techniques and related vulnerabili-
+ties, campaign names, involved sectors and nations.
+4.Filtering : the extracted data are filtered to retain
+only those relevant to the company’s sectors and na-
+tions.
+This automation flow was integrated into the com-
+pany’s workflow and monitored for three months. At the
+end of the observation phase, the collected data were an-
+alyzed, revealing that the most frequent attack techniques
+in this corporate context are Phishing (T1566 ) [48],
+Command and Scripting Interpreter (T1059 ) [47], and
+Obfuscated Files or Information (T1027 ) [49]. These
+techniques are also among the most frequent in our
+dataset, highlighting its strong representativeness of real-
+world threats. By analyzing the identified techniques, a
+report is generated that provides a set of mitigation strate-
+gies recommended by MITRE ATT&CK to strengthen
+the company’s defenses against the detected attack tech-
+niques.
+To evaluate the ability of Claude 3 Haiku [64] to de-
+tect techniques in CTI reports, we conducted three ex-
+periments in which the model was provided with dif-
+ferent types of CTI reports. For these experiments, we
+crafted a prompt. The structure of the prompt to be sub-
+mitted to the LLM is crucial, as an inadequate struc-
+ture could result in ambiguous, incorrect or imprecise
+responses. The prompt used for the experiments com-
+bines several prompt engineering techniques [65]: role
+prompting to assign the AI a role as a Threat Intelli-
+gence expert, zero-shot prompting to respond without
+specific examples, and output formatting to structure the
+responses in a JSON format.
+To evaluate the ability of Claude 3 Haiku [64] to de-
+tect techniques in CTI reports, we conducted three exper-
+iments in which the model was provided with different
+types of CTI reports. For these experiments, we crafted
+a prompt. The structure of the prompt to be submitted
+to the LLM is crucial, as an inadequate structure could
+result in ambiguous, incorrect, or imprecise responses.
+8The prompt used for the experiments combines several
+prompt engineering techniques [65]: role prompting to
+assign the AI a role as a Threat Intelligence expert, zero-
+shot prompting to respond without specific examples,
+and output formatting to structure the responses in a
+JSON format. In particular, the prompt is designed to
+generate a structured output that includes the MITRE
+ATT&CK technique code and its name, along with a
+motivation explaining why the technique was identified
+based on the provided text. This structured format en-
+sures consistency and facilitates the analysis of the out-
+puts.
+5.1 Results
+We evaluated the performance of the model using sev-
+eral key metrics to assess its ability to generate accurate
+and relevant responses. These metrics include Precision ,
+Recall , and F1-Score . The evaluation was carried out by
+comparing the predictions of the model with the entries
+contained in our dataset. The overall results for the three
+experiments are presented in Figure 5.
+InLarge-Size Report Evaluation , we selected CTI re-
+ports from our dataset, specifically related to APT29 [30],
+CARBANAK [32], FIN6 [34], FIN7 [36], OILRIG [38],
+and WIZARDSPIDER [42]. The selected reports are
+complex and detailed, with sizes ranging between 4 KB
+(∼400 words) and 20 KB ( ∼2000 words). The goal
+of this experiment is to evaluate the performance of the
+model when analyzing large reports.
+In the Small-Size Report Evaluation , we selected a
+subset of reports from the initial experiment, ranging in
+size from 4 KB ( ∼400 words) to 8 KB ( ∼800 words).
+We made this choice because we hypothesize that report
+size may significantly influence the performance of the
+model, and also to align the report sizes with those typi-
+cally found in commercial CTI feeds.
+ForCommercial Feed Evaluation , we used commer-
+cial CTI feeds, with sizes typically ranging between 2
+KB (∼200 words) and 8 KB ( ∼800 words). This exper-
+iment evaluates the performance of the model on com-
+mercial CTI feeds.
+The analysis of the results confirms the hypothesis that
+report size significantly affects the performance of the
+model. With Large-Size reports, the model achieved an
+F1-score of 61 .04%, while with Small-Size reports led
+to an improvement, reaching 76 .57%, highlighting the
+effectiveness of LLMs in processing more concise infor-
+mation. The model performed even better on commer-
+cial CTI feeds , achieving an F1-score of 78 .83%. This
+is because these sources present more compact infor-
+mation, fewer irrelevant sentences, and content that is
+more directly focused on TTPs compared to traditional
+CTI reports. Moreover, the performance on commercial
+Metrics Large-Size Small-Size Commercial Feed
+Precision 58.55% 80.95% 84.37%
+Recall 63.75% 72.64% 73.97%
+F1-Score 61.04% 76.57% 78.83%
+Figure 5: Evaluation of CTI extraction
+CTI feeds is comparable to that obtained with shorter
+CTI reports. This suggests that our dataset demonstrates
+promising generalizability , as it effectively represents
+real-world business context.
+To contextualize our results, we compare the perfor-
+mance metrics obtained in our study with those reported
+in previous work, which refer to their own datasets. Table
+5 presents a comparative analysis of results from other
+studies.
+Work Precision Recall F1-Score
+AECR (Chen et al., 2024) [1] 64.1% 68.3% 65.5%
+TTPHunter (Rani et al., 2023) [3] 74.0% 77.0% 75.0%
+TTPXHunter (Rani et al., 2024) [5] 97.4% 96.2% 97.1%
+rcATT (Legoy et al., 2020) [8] 72.2% 2.1% 4.0%
+MITREtrieval (Huang et al., 2024) [10] 31.0% 74.0% 43.7%
+IntelEX (Xu et al., 2023) [14] 69.6% 75.6% 72.4%
+LADDER (Alam et al., 2023) [16] 65.0% 63.0% 64.0%
+LLMCloudHunter (Schwartz et al., 2024) [18] 62.0% 75.0% 68.0%
+AttacKG+ (Zhang et al., 2024) [20] 54.5% 58.8% 56.6%
+CTI-Bench (Alam et al., 2024) [21] N/A N/A 62.1%
+Large-Size Report Evaluation 58.6% 63.8% 61.0%
+Small-Size Report Evaluation 80.9% 72.6% 76.6%
+Commercial Feed Evaluation 84.4% 73.8% 78.8%
+Table 5: Comparison of CTI extraction across studies
+Some studies do not make their datasets available,
+making it impossible to reproduce the high performance
+reported in their results.
+These results show a high variability of accuracy, de-
+pending on the dataset. Therefore, using a publicly-
+available dataset is important for reproducibility and
+comparability. Moreover, ensuring data variability is
+crucial in these evaluations, both in terms of the diver-
+sity of topics covered in the reports, and in terms of size.
+Some studies focus exclusively on reports from specific
+sectors, which can lead to models that are too special-
+ized within a narrow domain, limiting their adaptability
+9to a wider range of scenarios. The size of the reports,
+in particular, plays a significant role, as document length
+directly impacts the performance of LLMs.
+Regarding our approach, the results demonstrate its
+ability to outperform several existing methods on small-
+sized reports. Additionally, when tested on commercial
+feeds, it shows strong effectiveness in handling struc-
+tured data in operational contexts. Although perfor-
+mance on large reports is lower, it remains competitive
+with the best existing solutions, suggesting potential for
+further improvement.
+6 Conclusion
+This work introduces a novel CTI dataset that overcomes
+the limitations of existing datasets, providing a more
+comprehensive and structured resource for cybersecu-
+rity applications. We constructed the dataset from real-
+world CTI reports of varying sizes, ensuring its applica-
+bility to a wide range of attack scenarios, and based it
+on the MITRE ATT&CK framework. The dataset main-
+tains bidirectional traceability between the original doc-
+uments and the data, enhancing both transparency and
+accuracy. Additionally, we validated its quality through
+aninter-annotator agreement study, confirming its re-
+liability . Furthermore, the evaluation of an LLM in a
+real-world business context on this dataset highlights its
+promising generalizability .
+CTI-HAL offers a valuable tool for advancing AI-
+driven cybersecurity solutions, enabling the development
+of more accurate and effective models.
+Acknowledgments
+Sofia Della Penna and Lorenzo Parracino are both main
+authors of this work. We would like to thank Raf-
+faele D’Ambrosio for the helpful discussions and sup-
+port. This work has been partially supported by the
+IDA—Information Disorder Awareness Project funded
+by the European Union-Next Generation EU within the
+SERICS Program through the MUR National Recov-
+ery and Resilience Plan under Grant PE00000014, and
+by project GENIO (CUP B69J23005770005) funded by
+MIMIT.
+References
+[1] M. Chen, K. Zhu, B. Lu, D. Li, Q. Yuan, and Y . Zhu, “AECR:
+Automatic attack technique intelligence extraction based on fine-
+tuned large language model,” Computers & Security , 2024.
+[2] M. Chen, “AECR: Automatic attack technique intelligence ex-
+traction,” https://github.com/cmh14/AECR.git, 2025, gitHub
+repository.[3] N. Rani, B. Saha, V . Maurya, and S. K. Shukla, “Ttphunter: Auto-
+mated extraction of actionable intelligence as ttps from narrative
+threat reports,” in Proceedings of the 2023 Australasian Com-
+puter Science Week , 2023, pp. 126–134.
+[4] Rani, Nanda and Saha, Bikash and Maurya, Vikas and Shukla,
+Sandeep Kumar, “TTPHunter: Automated Extraction of Action-
+able Intelligence as TTPs from Narrative Threat Reports,” https://
+github.com/nanda-rani/TTPHunter-Automated-Extraction-of-A
+ctionable-Intelligence-as-TTPs-from-Narrative-Threat-Reports,
+2025.
+[5] N. Rani, B. Saha, V . Maurya, and S. K. Shukla, “Ttpxhunter: Ac-
+tionable threat intelligence extraction as ttps from finished cyber
+threat reports,” Digital Threats: Research and Practice , vol. 5,
+no. 4, pp. 1–19, 2024.
+[6] V . Orbinato, M. Barbaraci, R. Natella, and D. Cotroneo, “Au-
+tomatic mapping of unstructured cyber threat intelligence: an
+experimental study:(practical experience report),” in 2022 IEEE
+33rd International Symposium on Software Reliability Engineer-
+ing (ISSRE) . IEEE, 2022, pp. 181–192.
+[7] DessertLab, “cti-to-mitre-with-nlp,” https://github.com/dessertla
+b/cti-to-mitre-with-nlp/tree/main, 2023.
+[8] V . Legoy, A. Peter, C. Seifert, and M. Caselli, “MSc Thesis:
+rcATT,” https://github.com/vlegoy/rcATT/blob/master/MScT
+hesis rcATT VLegoy.pdf, 2020.
+[9] V . Legoy, “rcATT,” https://github.com/vlegoy/rcATT/tree/maste
+r, 2020.
+[10] Y .-T. Huang, R. Vaitheeshwari, M.-C. Chen, Y .-D. Lin, R.-H.
+Hwang, P.-C. Lin, Y .-C. Lai, E. H.-K. Wu, C.-H. Chen, Z.-J.
+Liao et al. , “Mitretrieval: Retrieving mitre techniques from un-
+structured threat reports by fusion of deep learning and ontology,”
+IEEE Transactions on Network and Service Management , 2024.
+[11] WMLab, “MITREtrieval,” https://github.com/wmlab-MITREtrei
+val/MITREtrieval, 2023.
+[12] MITRE Engenuity, “Our TRAM: Large Language Model Auto-
+mates TTP Identification in CTI Reports,” https://medium.com
+/mitre-engenuity/our-tram-large-language-model-automates-ttp
+-identification-in-cti-reports-5bc0a30d4567, 2023.
+[13] Center for Threat-Informed Defense, “TRAM,” https://github.c
+om/center-for-threat-informed-defense/tram, 2023.
+[14] M. Xu, H. Wang, J. Liu, Y . Lin, C. X. Y . Liu, H. W. Lim, and
+J. S. Dong, “Intelex: A llm-driven attack-level threat intelligence
+extraction framework,” arXiv preprint arXiv:2412.10872 , 2024.
+[15] Center for Threat-Informed Defense, “IntelEX Dataset,” https:
+//sites.google.com/view/intelex11/datasets, 2024.
+[16] M. T. Alam, D. Bhusal, Y . Park, and N. Rastogi, “Looking beyond
+iocs: Automatically extracting attack patterns from external cti,”
+inProceedings of the 26th International Symposium on Research
+in Attacks, Intrusions and Defenses , 2023, pp. 92–108.
+[17] Alam, Md Tanvirul and Bhusal, Dipkamal and Park, Youngja and
+Rastogi, Nidhi, “LADDER: Looking Beyond IoCs Dataset,” http
+s://github.com/aiforsec/LADDER, 2023.
+[18] Y . Schwartz, L. Benshimol, D. Mimran, Y . Elovici, and A. Shab-
+tai, “Llmcloudhunter: Harnessing llms for automated extrac-
+tion of detection rules from cloud-based cti,” arXiv preprint
+arXiv:2407.05194 , 2024.
+[19] G. Siracusano, D. Sanvito, R. Gonzalez, M. Srinivasan, S. Ka-
+matchi, W. Takahashi, M. Kawakita, T. Kakumaru, and R. Bi-
+fulco, “Time for action: Automated analysis of cyber threat intel-
+ligence in the wild,” arXiv preprint arXiv:2307.10214 , 2023.
+[20] Y . Zhang, T. Du, Y . Ma, X. Wang, Y . Xie, G. Yang, Y . Lu,
+and E.-C. Chang, “Attackg+: Boosting attack knowledge
+graph construction with large language models,” arXiv preprint
+arXiv:2405.04753 , 2024.
+10[21] M. T. Alam, D. Bhusal, L. Nguyen, and N. Rastogi, “Ctibench: A
+benchmark for evaluating llms in cyber threat intelligence,” arXiv
+preprint arXiv:2406.07599 , 2024.
+[22] Alam, Md Tanvirul and Bhusal, Dipkamal and Nguyen, Le and
+Rastogi, Nidhi, “CTIBench: A Benchmark for Evaluating LLMs
+in Cyber Threat Intelligence,” https://github.com/xashru/cti-ben
+ch/tree/main, 2024.
+[23] IBM, “What is threat intelligence?” https://www.ibm.com/think/
+topics/threat-intelligence.
+[24] MITRE Corporation, “MITRE ATT&CK Framework,” https://at
+tack.mitre.org/.
+[25] M. Arazzi, D. R. Arikkat, S. Nicolazzo, A. Nocera, M. Conti
+et al. , “Nlp-based techniques for cyber threat intelligence,” arXiv
+preprint arXiv:2311.08807 , 2023.
+[26] J.-Y . Yao, K.-P. Ning, Z.-H. Liu, M.-N. Ning, Y .-Y . Liu, and
+L. Yuan, “Llm lies: Hallucinations are not bugs, but features as
+adversarial examples,” arXiv preprint arXiv:2310.01469 , 2023.
+[27] A. H. Nasution and A. Onan, “Chatgpt label: Comparing the
+quality of human-generated and llm-generated annotations in
+low-resource language nlp tasks,” IEEE Access , 2024.
+[28] M. Aldeen, J. Luo, A. Lian, V . Zheng, A. Hong, P. Yetukuri,
+and L. Cheng, “Chatgpt vs. human annotators: A comprehen-
+sive analysis of chatgpt for text annotation,” in 2023 International
+Conference on Machine Learning and Applications (ICMLA) .
+IEEE, 2023, pp. 602–609.
+[29] Center for Threat-Informed Defense, “Adversary Emulation Li-
+brary,” https://github.com/center-for-threat-informed-defense/a
+dversary emulation library.
+[30] Center for Threat-Informed Defense, “APT29 Adversary Emula-
+tion Library,” https://github.com/center-for-threat-informed-def
+ense/adversary emulation library/tree/master/apt29.
+[31] MITRE ATT&CK, “APT29,” https://attack.mitre.org/groups/G0
+016/.
+[32] Center for Threat-Informed Defense, “Carbanak Adversary Em-
+ulation Library,” https://github.com/center-for-threat-informe
+d-defense/adversary emulation library/tree/master/carbanak.
+[33] MITRE, “Carbanak (G0008),” https://attack.mitre.org/groups/G0
+008/.
+[34] Center for Threat-Informed Defense, “FIN6 Adversary Emula-
+tion Library,” https://github.com/center-for-threat-informed-def
+ense/adversary emulation library/tree/master/fin6.
+[35] MITRE, “FIN6 (G0037),” https://attack.mitre.org/groups/G003
+7/.
+[36] Center for Threat-Informed Defense, “FIN7 Adversary Emula-
+tion Library,” https://github.com/center-for-threat-informed-def
+ense/adversary emulation library/tree/master/fin7.
+[37] MITRE, “FIN7 (G0046),” https://attack.mitre.org/groups/G004
+6/.
+[38] Center for Threat-Informed Defense, “OilRig Adversary Emula-
+tion Library,” https://github.com/center-for-threat-informed-def
+ense/adversary emulation library/tree/master/oilrig.
+[39] MITRE, “OilRig (G0049),” https://attack.mitre.org/groups/G004
+9/.
+[40] Center for Threat-Informed Defense, “Sandworm Adversary Em-
+ulation Library,” https://github.com/center-for-threat-informe
+d-defense/adversary emulation library/tree/master/sandworm.
+[41] MITRE, “Sandworm (G0034),” https://attack.mitre.org/groups/
+G0034/.[42] Center for Threat-Informed Defense, “WizardSpider Adversary
+Emulation Library,” https://github.com/center-for-threat-infor
+med-defense/adversary emulation library/tree/master/wizardspi
+der.
+[43] MITRE, “Wizard Spider (G0102),” https://attack.mitre.org/group
+s/G0102/.
+[44] CrowdStrike, “Big Game Hunting with Ryuk: Another Lucrative
+Targeted Ransomware,” https://www.crowdstrike.com/en-us/bl
+og/big-game-hunting-with-ryuk-another-lucrative-targeted-ran
+somware/.
+[45] MITRE, “Command and Scripting Interpreter - PowerShell
+(T1059.001),” https://attack.mitre.org/techniques/T1059/001/.
+[46] Abu, “PDFannots: Extracts Annotations from PDF Files,” https:
+//github.com/0xabu/pdfannots.
+[47] MITRE, “Command and Scripting Interpreter (T1059),” https:
+//attack.mitre.org/techniques/T1059/.
+[48] MITRE, “Phishing (T1566),” https://attack.mitre.org/techniques/
+T1566/.
+[49] MITRE, “Obfuscated Files or Information (T1027),” https://atta
+ck.mitre.org/techniques/T1027/.
+[50] MITRE, “Ingress Tool Transfer (T1105),” https://attack.mitre.o
+rg/techniques/T1105/.
+[51] MITRE, “Application Layer Protocol (T1071),” https://attack.m
+itre.org/techniques/T1071/.
+[52] MITRE, “Carbanak (S0030),” https://attack.mitre.org/software/
+S0030/.
+[53] MITRE, “CozyDuke (S0046),” https://attack.mitre.org/software/
+S0046/.
+[54] MITRE, “CosmicDuke (S0050),” https://attack.mitre.org/softwar
+e/S0050/.
+[55] MITRE, “Cobalt Strike (S0154),” https://attack.mitre.org/softw
+are/S0154/.
+[56] MITRE, “SeaDuke (S0053),” https://attack.mitre.org/software/
+S0053/.
+[57] K. Krippendorff, Content Analysis: An Introduction to Its
+Methodology . Thousand Oaks, CA: Sage Publications, 2004.
+[58] Klaus Krippendorff, “Reliability in Content Analysis,” Human
+Communication Research , 2013.
+[59] Python Software Foundation, “difflib – SequenceMatcher.ratio,”
+https://docs.python.org/3/library/difflib.html#difflib.Sequence
+Matcher.ratio.
+[60] K. S. Jones and K. E. Kummerfeld, “The State of the Art in In-
+formation Retrieval Evaluation,” in Proceedings of the 2002 Con-
+ference on Empirical Methods in Natural Language Processing ,
+2002.
+[61] Explosion AI, “spaCy: Industrial-Strength Natural Language
+Processing in Python,” https://spacy.io/.
+[62] SpaCy Models, “SpaCy Models: English Language,” https://spac
+y.io/models/en.
+[63] Cloud Security Team, “Not So Cozy: An Uncomfortable Ex-
+amination of a Suspected APT29 Phishing Campaign,” https:
+//cloud.google.com/blog/topics/threat-intelligence/not-so-c
+ozy-an-uncomfortable-examination-of-a-suspected-apt29-phish
+ing-campaign/, 2025.
+[64] Anthropic, “Introducing the next generation of Claude,” https:
+//www.anthropic.com/news/claude-3-family, 2024.
+[65] Deepset, “Prompt Engineering Guidelines,” https://docs.cloud.d
+eepset.ai/docs/prompt-engineering-guidelines, 2024.
+11

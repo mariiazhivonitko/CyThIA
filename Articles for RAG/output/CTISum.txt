@@ -1,0 +1,1104 @@
+arXiv:2408.06576v2  [cs.CL]  30 Jun 2025Highlights
+CTISum: A New Benchmark Dataset For Cyber Threat Intelligence Summarization
+Wei Peng,Junmei Ding,Wei Wang,Lei Cui,Wei Cai,Zhiyu Hao,Xiaochun Yun
+•Tothebestofourknowledge,wemakethefirstattempttobuildanewbenchmarkCTISumwiththeCTIStaskanda
+novel APS subtask in the cybersecurity domain.
+•A multi-stage annotation pipeline is designed to obtain the high-quality dataset with the assistance of LLMs while
+manually controlling the quality.
+•Experiments on CTISum demonstrate the challenge of the proposed two tasks, meanwhile indicating a large space for
+future research.CTISum: A New Benchmark Dataset For Cyber Threat Intelligence
+Summarization⋆
+Wei Penga, Junmei Dingb, Wei Wanga, Lei Cuia, Wei Caia, Zhiyu Haoaand Xiaochun Yuna
+aZhongguancun Laboratory, Beijing, P.R. China
+bBeijing University of Posts and Telecommunications, Beijing, China
+ARTICLE INFO
+Keywords :
+Information Systems
+Cyber Threat Intelligence
+Summarization
+Dataset and BenchmarkABSTRACT
+CyberThreatIntelligence(CTI)summarizationinvolvesgeneratingconciseandaccuratehighlights
+from web intelligence data, which is critical for providing decision-makers with actionable insights to
+swiftly detect and respond to cyber threats in the cybersecurity domain. Despite that, the development
+of efficient techniques for summarizing CTI reports, comprising facts, analytical insights, attack
+processes, and more, has been hindered by the lack of suitable datasets. To address this gap, we
+introduce CTISum, a new benchmark dataset designed for the CTI summarization task. Recognizing
+thesignificanceofunderstandingattackprocesses,wealsoproposeanovelfine-grainedsubtask: attack
+process summarization, which aims to help defenders assess risks, identify security gaps, and uncover
+vulnerabilities. Specifically, a multi-stage annotation pipeline is designed to collect and annotate
+CTI data from diverse web sources, alongside a comprehensive benchmarking of CTISum using both
+extractive, abstractive and LLMs-based summarization methods. Experimental results reveal that
+current state-of-the-art models face significant challenges when applied to CTISum, highlighting that
+automaticsummarizationofCTIreportsremainsanopenresearchproblem. Thecodeandexample
+dataset can be made publicly available at https://github.com/pengwei-iie/CTISum.
+1. Introduction
+Cyber Threat Intelligence (CTI), also known as threat
+intelligence, is knowledge, skills and experience-based infor-
+mation concerning the occurrence and assessment of both
+cyber and physical threats as well as threat actors [ 17,12].
+The CTI data often originates from diverse web sources, in-
+cluding forums, blogs, and open-source repositories, making
+itdifficultforanalyststoefficientlylocatethemostrelevant
+and high-value intelligence from the web. Therefore, it be-
+comes crucial to automatically summarize the knowledge
+containedinCTIreports,whichcouldhelpanalystssimply
+identify events, patterns, cyber attacks and conclusions. Fur-
+thermore, CTI summarization has broad applicability across
+domains like cybersecurity [ 36], military intelligence [ 39],
+technical alerts, threat modeling, and more, where compli-
+cated information needs to be distilled into concise insights.
+With the ongoing advancement of summarization tech-
+niques, numerous datasets have emerged, such as CNN/-
+DailyMail[ 28]andXSum[ 29],amongothers. Inaddition,
+the introduction of these datasets further drives the devel-
+opmentofassociatedtechnologieslikePGNet[ 37],BART
+[19], BRIO [ 23], etc. Furthermore, domain-specific sum-
+marization researches have gradually arisen. Examples in-
+clude biomedicine [ 46], finance [ 26], law [38], etc. This fur-
+ther facilitates various applications involving aiding medical
+decision-making,generatingfinancialreports,andsummariz-
+inglegaldocuments. Theboomofdomain-specificsumma-
+⋆This document is the results of the research project funded by the
+Zhongguancun Laboratory.
+∗Corresponding author
+pengwei@zgclab.edu.cn (W. Peng); wangwei@zgclab.edu.cn (W.
+Wang); cuilei@zgclab.edu.cn (L. Cui); caiwei@zgclab.edu.cn (W. Cai);
+haozy@zgclab.edu.cn (Z. Hao); yunxiaochun@zgclab.edu.cn (X. Yun)
+ORCID(s): 0000-0001-8179-1577 (W. Peng)
+CTI Reports
+Page1: Background 
+APT 28 (aka Pawn Storm, Fancy Bear) is a
+famous hacking group  that ...
+...
+Page 8: ... infection  is a spear phishing email
+delivering a W ord Of fice document ... to set
+persistence and  trigger the following
+malicious  ...
+Page 8: This implant, which is still unreported at
+the time of writing, has been internally called
+SkinnyBoy  and its attribution goes to APT28  ...
+...
+Page10: ... triggers the execution of the
+devtmrn.exe executable, which simply acts as a
+launcher of the main implant  ...
+...1. Spear phishing email  delivers
+first stage dropper 2. Dropper
+installs launcher and main
+implant  3. Implant exfiltrates ...What is the attack process in
+this CTI report? Summarize it.Please make a
+summarization of this CTI
+report.
+The report analyzes a new
+backdoor  malware named
+SkinnyBoy  ... extracts launcher
+and backdoor implant  ...
+CTIS Task 
+APS TaskFigure 1: An example in the CTISum. Blue arrow and orange
+arrow indicate the CTIS and APS tasks, respectively. Red font
+represents the key words.
+rization promotes the understanding of domain terminology
+andcontext,whichiscrucialforgeneratinghigh-qualitysum-
+maries for further research.
+Despiteremarkableprogressmadeinautomatictextsum-
+marization,effectivemethodsforsummarizingCTIreportsin
+the cybersecurity domain remain largely unexplored. This is
+primarilyduetothelackofavailabledataset. Theuniquechar-
+acteristics of CTI reports, such as technical jargon, evolving
+threatlandscapes,longerreportsandfragmenteddatainfor-
+mation,makeitchallengingtocreateanannotation,whichin
+turnhindersthedevelopmentofrobustmodelsandevaluation
+benchmarks. However,recentadvancesinLargeLanguage
+Wei Peng et al.: Preprint submitted to Elsevier Page 1 of 12CTISum
+Models(LLMs)[ 14,9,30,40,7,6]haveshownpromising
+text understanding and generation capabilities. Therefore,
+this raises the question: How might we construct a high-
+quality CTI summarization dataset with the assistance of
+LLMs?
+In this paper, we construct a new benchmark CTISum
+basedonthreatintelligenceobtainedfromdiversewebsources
+in the cybersecurity domain. In addition to the CTI Summa-
+rization (CTIS) task, considering the importance of attack
+process,weproposeanovelfine-grainedsubtask,AttackPro-
+cess Summarization (APS), to enable defenders to quickly
+understandreportedattackbehaviors,assessrisksandidentify
+security vulnerabilities. Specifically, a multi-stage annota-
+tion pipeline is designed to preprocess web CTI reports and
+obtainannotationdatawiththeassistanceofLLMs,which
+includes the data collection stage, parsing & cleaning stage,
+promptschemastageandintelligencesummarizationstage.
+To further keep the high quality of the CTISum, we addi-
+tionallyemployexpertreviewsfordoublechecking(details
+can be seen in Section 3.1). With proper data, automated
+systemscanhelpsynthesizelengthyCTIreportsintoconcise
+and accurate summaries for different intelligence analysts. A
+sampledreportandreferencesummaryinCTISumareshown
+in Figure1. Thesystem notonly requiresto makea general
+summary of the full document (task 1), but also needs the
+capabilitytofocusonandgeneratetheattackprocess(task2).
+After cleaningand human checking,CTISum obtains 1,345
+documents and corresponding summaries.
+What makes CTISum a challenging dataset can be pre-
+sentedasfollows. First,theaveragedocumentlengthisabout
+2,865 words. Current deep learning techniques are inca-
+pableofprocessingdocumentssurpassing512/1024tokens
+in length (after tokenization), such as GPT1[ 33], T5[34],
+BART[19] and so on. Although LLMs can deal with longer
+input, however, fine-tuning LLMs is resource consuming.
+Moreover,LLMsaregenerallypre-trainedongenericdatasets,
+so they often fall short when performing zero-shot tasks
+in specific domains, such as cybersecurity. Second, the
+document-to-summary compression ratio on the two tasks
+are 14.32 (2865.60 / 200.04) and 22.23 (2865.60/118.27),
+respectively (details in Table 1). The high compression ra-
+tio shows competitiveness with the current long document
+summarization datasets, requiring systems to be extremely
+preciseincapturingonlythemostrelevantfactsfromlengthy
+documents in a minimal number of words. Finally, CTISum
+has another subtask, APS, which means the system should
+be capable of the ability to capture the fine-grained attack
+process described in CTI reports.
+To demonstrate the challenges posed by the proposed
+CTISum dataset, we conduct comprehensive experiments
+comparingarange ofextractiveand abstractivesummariza-
+tion methods. The automatic and human evaluation indicate
+that existing approaches still have considerable limitations
+on the CTISum. The extractive methods struggle to identify
+salient information from lengthy and complex documents.
+They tend to produce incomplete summaries. Abstractive
+techniquesfacechallengesingeneratingcoherentandnon-redundant summaries, as well as avoiding hallucinations.
+Bothextractiveandabstractivemethodsachievelowscores
+onautomaticmetricslikeROUGE.Ourfindingshighlightthe
+need for continued research to develop summarization tech-
+niquesthatcandistillcriticalinformationinCTISum. The
+dataset and baselines will be released for further research.
+The contributions can be summarized as follows:
+•Tothebestofourknowledge,wemakethefirstattempt
+tobuildanewbenchmarkCTISumwiththeCTIStask
+and a novel APS subtask in the cybersecurity domain,
+which focuseson summarizingthe key factsor attack
+process from CTI reports.
+•Amulti-stageannotationpipelineisdesignedtoobtain
+thehigh-qualitydatasetwiththeassistanceofLLMs
+while manually controlling the quality, which consists
+ofthedatacollectionstage,parsing&cleaningstage,
+promptschemastageandintelligencesummarization
+stage.
+•Comprehensiveexperiments onCTISumdemonstrate
+the challenge of the proposed two tasks, meanwhile
+indicating a large space for future research.
+2. Related Work
+2.1. Text Summarization
+A considerable amount of existing researches in auto-
+matictextsummarization[ 35,28,27,4,18,44]haveexplored
+toimprovesummarygenerationfornewsarticles,usingpopu-
+lardatasetssuchasCNN/DailyMail[ 28],XSum[ 29],etc. In
+addition, scientific document summarization has emerged as
+another critical area, with datasets based on ArXiv/PubMed
+[8], and other academic sources. The main approaches cover
+two aspects. First, extractive methods [ 13,5,45,21,22,44]
+involve identifying and extracting key sentences or passages
+from the original text to form the summary. For instance,
+Liu et al. [ 22] introduce a document-level encoder based on
+BERTandproposeageneralframeworkforsummarization.
+Second, abstractive techniques focus on generating new sen-
+tencestocapturethemeaningofthesourcetext. Forexample,
+sequence-to-sequence models with attention [ 25,27,31] are
+usuallyutilizedtogeneratetheprobabilitydistributionson
+thevocabulary. Inaddition,Seeetal. [ 37]presentahybrid
+pointer generator architecture for abstractive summarization.
+Andmorerecently,transformer-basedmodelslikeT5[ 34],
+BART [19] and Longformer[ 3] have shown advanced perfor-
+mance on the summarization task.
+Althoughcurrentgeneralsummarizationtechniqueshave
+madesomeprogress,theirperformancesignificantlydecrease
+when transferred to CTI summarization tasks due to the lack
+of domain-specific fine-tuning data. The creation of the
+CTISumcouldprovideanessentialresourcefordomainadap-
+tation, as well as developing and evaluating domain-specific
+summarization approaches.
+Wei Peng et al.: Preprint submitted to Elsevier Page 2 of 12CTISum
+Intelligence  Transcripts
+APTnotes 
+...Open Source Report
+Trendmicro 
+...Threat Encyclopedia
+Symantec 
+Kaspersky
+...Security Company ReportParsing & Cleaning CTI Prompt Schema
+Attack Prompt SchemaCTI Summarization
+Attack Process Summarization   Stage 2:  Parsing & Cleaning           Stage 3:  Prompt Schema           Stage 4: Intelligence  Summarization       
+1. Filter PDF files
+displayed as scanned.
+2. Extract the text
+from each PDF file
+using a PDF
+parsing tool.
+3. Remove blank
+lines, strange
+formatting
+characters.
+4. Examine and clean
+text with the
+designed regular
+expressions. 
+1. Gather all PDF files
+that need to be annotated.
+2. The collected intelligence
+reports should from different
+sources and time.- Read through the following
+passage and highlight any mentions
+of key events.
+- Summarize this PDF into a
+coherent and complete abstract.
+- Summarize this PDF into some
+points.
+ 
+- Determine whether the  attack
+process exists.
+- List or extract the attack
+process in the document.Coarse-grained Fine-grained
+Attack
+SummaryGeneral  
+SummaryRanking
+Ranking CombineCombine
+   Stage 1:  Data Collecting
+Figure 2: The overview of the proposed multi-stage annotation pipeline for CTIS and APS
+tasks.
+2.2. Domain-specific Summarization
+Forthedomain-specificsummarization,therearemany
+potentialapplicationsacrossdifferentdomainslikegovern-
+ment[16],finance[ 26],courtrulings[ 38]andbiomedicine
+[46]. For example, in the government domain, summariza-
+tion systems can help process large volumes of regulatory
+text and legal documents. Huang et al. [ 16] propose a novel
+efficientencoder-decoderattentionwithhead-wisepositional
+stridestoeffectivelydoubletheprocessedinputsequencesize.
+For the finance industry [ 26], summarization of earnings re-
+ports, financial statements, and news can assist investors and
+analystsinmakingdecisions. Inaddition,summarizingcourt
+rulings,caselaw,andlitigationdocuments[ 38]helpslegal
+professionals in their work. Within biomedicine [ 46], health-
+care professionals can make informed decisions by using
+summariesofclinicaltrialfindings,medicalliterature,and
+patient records. Different from the above domains, we make
+thefirstattempttobuildtheCTIsummarizationdatasetinthe
+cybersecuritydomain,whichhelpsfillthegapandenables
+new research into CTI summarization techniques.
+3. Data Construction
+AsshowninFigure2,theproposedmulti-stageannota-
+tion pipeline consists of four stages. The first stage is col-
+lectingdatafromdiversewebsources,namelyopensource
+report [10], threat encyclopedia [ 2], and security company
+report[1]toensurethediversityandcoverage. Thesecondstage is parsing and cleaning which aims to parse original
+PDFreportsintoreadabletext,thenobtainhigh-qualityinput
+data by manually cleaning and filtering. Next follows the
+promptschemastage,wheredomainexpertsdesignvarious
+prompts based on different tasks, to fully utilize the pow-
+erful text generation capabilities of LLMs and prepare for
+the annotation. Finally, the intelligence summarization stage.
+To combine system productivity and expert experience ef-
+ficiently, we transform the manual annotation process into
+rankingandclassifying,havingexpertsreviewandrankthe
+outputs of LLMs to obtain the final summary. Next, we first
+introduce the multi-stage annotation pipeline, and then make
+a statistics and analysis of the CTISum.
+3.1. The Multi-stage Annotation Pipeline
+The multi-stage annotation pipeline focuses on obtaining
+the high-qualityCTISum dataset, wherewe attempt to com-
+bine the strengths of both expert experience and LLMs (like
+GPT-4 [30] orClaude2 or 3.5[ 6]) toachieve semi-automatic
+summarization annotation for efficiency in the cybersecurity
+domain.
+Stage 1: Data Collecting. To gather relevant CTI reports
+andbuild CTISum,weuse thereportsscrapedfrom diverse
+web sources, including web open source report like APT-
+notes1, threat encyclopedia like Trendmicro2, and security
+1https://github.com/blackorbird/APT_REPORT
+2https://www.trendmicro.com
+Wei Peng et al.: Preprint submitted to Elsevier Page 3 of 12CTISum
+companyreportlikeSymantec3toensurethediversityand
+coverage of the CTISum. The range of collected data is cov-
+ered from 2016 to 2024. For the summarization tasks, a
+balanced dataset of 1,345 documents is sampled and anno-
+tated with two categories: CTIS and APS.
+Stage 2: Parsing and Cleaning. Inordertoobtainhigh-
+quality input data, the second stage focuses more on parsing
+and further cleaning the parsed text.
+Given that CTI reports are currently formatted as PDF
+files, which have complex structure and cannot be directly
+usedastheinputtothesystem,onenecessarystepistoparse
+the PDFs and extract readable text. Specifically, the gath-
+eredPDFsarefirstlyfilteredtoonlyincludethosecontaining
+actual text content, rather than scanned documents which
+cannotbeparsedbycertaintoolslikePDFMiner. Then,an
+off-the-shelfPDFparsinglibrary4isleveragedtoprogram-
+maticallyextractthereadabletextfromeachdocument,while
+figuresarediscarded. Finally,theoutputtextissavedinTXT
+format, allowing transferability to downstream systems.
+After parsing, it is indispensable to clean and filter the
+extractedtextforhigh-qualityinputdatatotheLLMs. This
+post-processing helps improve the quality and consistency
+of the textualdata. One methodology isto manually review
+samples of the extracted text to identify issues that need to
+be cleaned. Some rules are:
+•Correcting encoding issues when parsing error.
+•Removingblanklinesandoddcharactersthatgetex-
+tracted but provide no value.
+•Cleaning up irregular textlike ellipses and page num-
+bers that are extracted from tables of contents, lists,
+etc.
+•Removing non-English and useless characters.
+•Deduplicatingandremovingstringslikelongsequences
+of consecutive IP addresses, hashes, etc.
+•Filteringwithregularexpressions. DetailsinAppendix
+A.2.
+The parsing and cleaning stage ensures higher quality
+input text for the next stage of analysis and annotation.
+Stage 3: Prompt Schema. The purpose of this stage is
+to develop a detailed prompt schema to guide the LLMs
+(Claude2 or 3.5, ChatGLM3, etc.) in producing candidate
+summaries,suchashighlightingkeyeventsandsummarizing
+reports, attack processes, some useful annotations, etc. To
+generateaccurateandconsistentsummariesfortheCTIStask
+andtheAPStask,CTIexpertsanalyzetheparsedandcleaned
+text and thendesign the CTI promptschema and attack pro-
+cess prompt schema, respectively. As shown in Figure 2,
+several key annotation prompts are defined as follows:
+•Key Events: The instruction, read through the fol-
+lowingpassageandhighlightanymentionsofkey
+events,willfocusonimportantcyberthreateventslike
+new malware campaigns, critical vulnerabilities, or
+notable hacks.
+3https://www.broadcom.com/support/security-center
+4https://github.com/euske/pdfminer/tree/master•Coherent Summary: To obtain the complete and co-
+herent abstract, the instruction, summarize this PDF
+into a coherent andcomplete abstract , is leveraged.
+•AdditionalPoints: Thepurposeoftheinstruction sum-
+marizethisPDFintosomepoints istogeneratesome
+additional aspects for supplementary.
+•Determination: Considering some reports do not con-
+taintheattackprocess,theinstruction determinewhether
+the attack process exists is designed.
+•Attack Process: The instruction, list or extract the
+attack process in the document , is utilized for the
+APS task.
+Thepromptschemaoutlineseachannotationpromptin
+detail,whichisacriticalcomponentthatwillguidetheLLMs
+to produce useful, accurate, and consistent summaries.
+Stage 4: Intelligence Summarization. Tocombinesys-
+temproductivity andexpert experiencemoreefficiently,we
+transform the manual annotation process into ranking and
+classifying model-generated results, having three experts re-
+view and rank the outputs into overall summaries. Specifi-
+cally,LLMslikeGPT-4o[ 30],Claude2or3.5[ 6],ChatGLM3
+[42]are leveraged togenerate multiplecoarse-grained sum-
+maries for the proposed two tasks. Then, three domain ex-
+perts are involved in reviewing and ranking the candidate
+summaries, discussing and selecting the better content to
+combine into a final gold summary. If the generated sum-
+mariesturnouttobeinadequate,theexamplewouldbedis-
+carded. The domain experts play a key role in evaluating
+and improving the model-generated summaries to produce a
+high-quality benchmark. Their human judgment and domain
+expertise complement the capabilities of LLMs. This collab-
+orativehuman-AIapproachallowsthecreationofabstractive
+summaries that are coherent, relevant, and accurate.
+3.2. Data Statistics
+Table 1 describes the statistics of the CTISum dataset
+and existing summarization datasets from different domains.
+The datasets are divided into general and specific domain
+categories, with the latter attracting substantial interest in re-
+centyearsfrom2021to2024. Andwemakethefirstattempt
+to build the CTI summarization dataset in the cybersecurity
+domain. Specifically, CTISum has 1,345 documents from
+diverse web sources, with an average document length of
+2,865 words, with an average CTI summary length of 200
+words, and with a high compression ratio of 14.32. Notably,
+CTISum is the only dataset with the subtask, while other
+datasets simply make a general summary of the document.
+The average length of the attack process summaries is about
+118words,whichisshorterthanthegeneralsummaries. This
+highlights the challenging nature of generating focused sum-
+mariesthatcapturingtheattackprocessfromlongdocuments.
+Inaddition,theFleissKappaevaluationofthedatasetcanbe
+seen in Sec. 5.5.
+Insummary,thetablehighlightsthatCTISumisachal-
+lenging dataset for summarization in the cybersecurity do-
+main, with a novel subtask (attack process summarization)
+andhighabstractionrequirements. TheCTISumdatasethelps
+Wei Peng et al.: Preprint submitted to Elsevier Page 4 of 12CTISum
+Table 1
+Statistics of CTISum dataset and existing different domain summarization datasets. Num-
+bers which are not reported are left blank. The numbers for the datasets marked with∗are
+copied from the paper [ 26], whereas the ones marked with†are copied from the work [ 29].
+Doc.: document, Avg.: average, Len.: length, APS: attack process summarization.
+Dataset # Doc. Avg. Doc. Len. Avg. Sum. Len. Avg. APS Len. Has Subtask Domain
+General Domain
+Arxiv/PubMed [8]∗346,187 5,179.22 257.44 - No Academic
+CNN[28]†92,579 760.50 45.70 - No News
+DailyMail [28]†219,506 653.33 54.65 - No News
+XSum[29]†226,711 431.07 23.26 - No News
+BookSum Chapters [26]∗12,630 5,101.88 505.42 - No Books
+Specific Domain
+GovReport [16] 19,466 9,409.40 553.40 - No Government
+Discharge [46] 50,000 2,162.29 28.84 - No Biomedicine
+Echo[46] 162,000 315.30 49.99 - No Biomedicine
+ECTSum [26] 2,425 2,916.44 49.23 - No Finance
+IN-Ext [38] 50 5,389 1,670 - No Court Rulings
+UK-Abs [38] 793 14,296 1,573 - No Court Rulings
+CTISum 1,345 2,865.60 200.04 118.27 Yes Cybersecurity
+fill the gap and enables new system design in future work.
+4. Problem Formulation
+Existing approaches usually define the summarization
+taskasasequence-to-sequencetask. Specifically,theprob-
+lem formulationcan be formulated asfollows. Givena doc-
+ument𝐷= (𝑥1,…,𝑥𝑁)that consists of 𝑁words, with
+𝑌= (𝑦1,…,𝑦𝑀)beingthecorrespondingsummary. Forthe
+proposed CTISum, there are two tasks, including CTIS task
+andAPStask. ForCTIStask,theobjectistooutputageneral
+summary of the CTI report. Similarly, the object of the APS
+task is to generate a summary of the attack process.
+5. Experiments
+5.1. Evaluation Metrics
+In this section, the automatic and human A/B evaluation
+are considered to validate the performance of the current
+SOTA models.
+Followingpapers[ 15,26],BERTScore[ 43]andROUGE-
+𝑛(R-𝑛)[20]aretakenasevaluationmetrics,whicharewidely
+usedforevaluatingthequalityofsummarization. BERTScore
+is a metric for evaluating text generation models, which mea-
+sures the similarity between the generated text and reference
+text using contextual embeddings from pre-trained BERT.
+ROUGE-𝑛refers to the overlap of n-grams between the gen-
+erated and reference summaries. Specifically, ROUGE- 1
+evaluatesunigramoverlap,ROUGE- 2measuresbigramover-
+lap, and ROUGE- 𝐿calculates longest common subsequence
+overlap. Thesemetricscomparematchingunitssuchaswords
+and phrases between the generated and reference summaries,
+with higher scores indicating better summarization quality.
+Among the ROUGE metrics, ROUGE- 𝐿generally corre-
+sponds best with human judgments of summary quality.In previous studies, human evaluation is usually con-
+ducted by crowdsourcing workers who rate responses on
+ascalefrom1to5fromtheaspectsofcorrectness,relevancy,
+etc. However, the criteria can vary widely between differ-
+ent individuals. Therefore, this study adopts the human A/B
+evaluation for a high inter-annotator agreement. Given the
+generated summaries of two models A and B, three analysts
+are prompted togo through an entire CTI reportand choose
+thebetteroneforeachofthe80randomlysub-sampledtest
+instances. For objectivity, annotators include those with and
+withoutbackgroundknowledge(task-related). Thefinalre-
+sults are determined by majority voting. If the three anno-
+tatorsreachdifferentconclusions,thefourthannotatorwill
+be brought in. We adopt the same human evaluation with
+paper[26]: 1)FactualCorrectness: whichsummarycanbe
+supported by the source CTI report? 2) Relevance: which
+summarycapturespertinentinformationrelativetotheCTI
+report? 3)Coverage: whichsummarycontainsthegreatest
+coverage of relevant content in the CTI report?
+5.2. Experimental Setting
+TheimplementationofbaselinesisbasedontheHugging-
+Face framework. The AdamW optimizer [ 24] with𝛽1= 0.9
+and𝛽2= 0.99is used for training, with an initial learning
+rateof 3𝑒− 5andalinearwarmupwith 100steps. Thebatch
+size is set to 16for training, and we use a batch size of 1and
+amaximumof 128decodingstepsduringinference. Top- 𝑝
+sampling is set to 0.9, temperature 𝜏= 0.7. The epoch is set
+to5. For preprocessing, we randomly split the dataset into
+train, validation and test set with a ratio of 8:1:1.
+5.3. Baselines
+Several SOTA approaches are illustrated for compari-
+son. Themodelscanbemainlydividedintoextraction-based,
+abstraction-based and long-document-based methods.
+Wei Peng et al.: Preprint submitted to Elsevier Page 5 of 12CTISum
+Table 2
+Performance of automatic evaluation on CTIS and APS tasks. LLAMA2 is in the zero-shot
+setting because of the lack of resources. The best results are highlighted in bold.
+CTIS Validation CTIS Test
+Model BERTScore ↑R-1↑R-2↑R-L↑BERTScore ↑R-1↑R-2↑R-L↑
+Extractive
+BertSumExt [22] 82.15 26.91 5.91 13.09 81.36 20.43 3.52 11.76
+MatchSum [44] 83.91 39.31 13.39 20.60 83.75 33.76 9.34 18.91
+Abstractive
+Transformer [41] 45.83 34.15 12.05 19.88 45.17 32.94 10.37 18.55
+T5 [34] 70.48 43.75 16.58 28.06 69.21 42.41 14.35 27.32
+BART-base [19] 70.36 44.45 16.26 27.24 69.24 42.48 14.30 26.23
+BART-large [19] 71.21 47.11 18.32 29.20 70.41 45.76 16.88 29.03
+Long-document-based
+Longformer[3] 71.06 46.97 17.21 28.22 70.31 45.39 15.66 27.09
+LLAMA2 [40] (zero-shot) 33.87 21.35 5.93 20.51 32.15 20.89 5.66 19.22
+GPT-4o(zero-shot) 65.82 40.18 13.22 24.33 64.31 38.70 12.71 22.98
+APS Validation APS Test
+Model BERTScore ↑R-1↑R-2↑R-L↑BERTScore ↑R-1↑R-2↑R-L↑
+Extractive
+BertSumExt [22] 81.38 20.67 3.06 11.87 81.38 20.35 3.46 11.73
+MatchSum [44] 83.93 33.86 9.86 19.17 83.75 33.73 9.35 18.88
+Abstractive
+Transformer [41] 40.43 28.22 7.86 16.50 39.15 27.03 6.21 15.48
+T5 [34] 68.41 36.20 10.27 24.70 66.06 32.09 7.62 21.78
+BART-base [19] 70.47 40.47 12.33 25.28 70.70 39.42 11.13 24.45
+BART-large [19] 71.31 41.88 12.76 26.54 70.32 40.25 11.65 25.06
+Long-document-based
+Longformer[3] 70.98 41.35 11.77 25.36 70.41 39.91 9.78 23.93
+LLAMA2 [40] (zero-shot) 21.06 15.68 2.23 13.14 20.38 14.66 2.02 12.28
+GPT-4o(zero-shot) 48.77 32.06 9.11 18.69 45.39 30.55 8.61 17.75
+Extractive Model Extractive summarization involves se-
+lecting a subset of salient sentences, phrases, or words from
+the original document to form the summary. The key idea
+is to identify and extract the most important content, and
+thenarrangeextractedcontenttoflowlogically. Wesimply
+introduce some methods as follows.
+BertSumExt [ 22] is a neural extractive summarization
+model based on BERT [ 11], which takes BERT as the sen-
+tenceencoderandaTransformerlayerasthedocumenten-
+coder. Aclassifierisutilizedtoperformsentenceselection,
+then the model outputs the final summary.
+MatchSum [ 44] formulates the extractive summarization
+task as a semantic text matching problem and develops a
+novelsummary-levelframeworkMatchSum,whichgenerates
+acollectionofpossiblecandidatesummariesfromtheoutput
+of BertSumEXT. The candidate that matches best with the
+document is selected as the final summarized version.Abstractive Model Abstractive summarization involves
+generatingnewphrasesandsentencesthatconveythemost
+importantinformationfromthesourcedocument,whichuses
+semantic understanding and language generation technology
+tomakeasummarization. Hence,wefine-tuneBART[ 19]
+and T5 [34] from the HuggingFace library.
+BART [19] is an encoder-decoder language model based
+onasequence-to-sequencearchitecture,whichachievesstrong
+performanceonavarietyofNLPtaskslikesummarization,
+question answering and text generation after fine-tuning.
+T5 [34] uses a standard Transformer encoder-decoder
+architecture, which converts all NLP tasks into a unified text-
+to-text format where the input and output are always text
+strings. T5 comes in several sizes including T5-Small, T5-
+Base, T5-Large, etc. In this paper, the setting is based on
+T5-Base.
+Long-document-based Model Long-document-basedsum-
+marizationreferstogeneratingsummariesfordocumentsthat
+Wei Peng et al.: Preprint submitted to Elsevier Page 6 of 12CTISum
+Table 3
+Results for the human evaluation of model-generated summaries by three intelligent analysts.
+CTIS Task APS Task
+Correctness Relevance Coverage Correctness Relevance Coverage
+Model Summary-level scores (about 80 summaries)
+BART better 33.33 26.67 46.67 40.00 33.33 46.67
+Longformer better 26.67 20.00 20.00 26.67 26.67 20.00
+Both equally good 40.00 53.33 33.33 33.33 40.00 33.33
+are significantly longer than typical texts, e.g. 1,024 tokens,
+like Longformer[3], LLAMA2 [40], etc.
+Longformer[ 3]isanextensiontotheTransformerarchi-
+tecture, which leverages an attention mechanism whose com-
+putationalcomplexitygrowslinearlyasthelengthoftheinput
+sequenceincreases,makingiteasytoprocessthousandsof
+tokens or more. LLAMA2 [ 40] is a Transformer-based large
+language model, which is trained on massive text datasets
+tolearnnaturallanguagepatternsandgeneratehuman-like
+text. The context length of LLAMA2 can extend up to 4096
+tokens, allowing it to understand and generate longer texts.
+Inthispaper,the7billionLLAMA2isutilizedtocompare
+against fine-tuned models in zero-shot setting.
+5.4. Main Results
+Automatic Evaluation. We compare the performance of
+extractive models, abstractive models and long-document-
+based models on CTIS and APS tasks. As depicted in Ta-
+ble 2, extractive models perform the almost worst on both
+tasks,demonstratingthatintelligencesummarizationincy-
+bersecurityinvolvesmorethanjustextractingsentences. In-
+terestingly, they obtain the best BERTScore, one possible
+reason is that these two models are based on BERT, leading
+to high BERTScore. Compared with MatchSum, abstractive
+model like BART-large (about 374M) achieves better result,
+about 10.12% and 6.18% gain on ROUGE-L on two tasks,
+which shows that the abstractive models are more suitable
+forthesetwotasks. Then,long-document-basedmodellike
+Longformer(102M)obtainssimilarresultscomparedwith
+BART-base (about 121M). Notably, LLAMA2-7B and GPT-
+4o (zero-shot) do not attain further improvement on all the
+evaluationmetrics,leavingnoticeableroomforfuturework
+on domain LLMs fine-tuning and few-shot learning on the
+benchmark. Finally, we find that performance is worse on
+theAPStask,likelybecausetheattackprocessexhibitsprop-
+ertieslikevariability,concealmentandcomplexity,making
+APS more challenging than general summarization. Enhanc-
+ingmodelsforAPStaskremainsanimportantdirectionfor
+future research.
+Human A/B Evaluation. In addition to the automatic eval-
+uation,humanA/Bevaluation[ 32]isconductedtovalidate
+theeffectivenessofcurrentSOTAmodelsthatBART-large
+andLongformerarecompared. TheresultsinTable3demon-
+strate the consistent conclusion with automatic evaluation. It
+can beseen thatthe summaries from BART-large aremuchTable 4
+Fleiss Kappa evaluation of CTISum dataset.
+Score 1 2 3 4 5 Fleiss Kappa
+Result 0 9 58 129 54 0.37
+Score 1 and 2 3 4 and 5 Fleiss Kappa
+Result 9 58 183 0.61
+morepreferredthanthoseofthebaselinesintermsofthethree
+aspects. For example, compared with Longformer, BART is
+superiorintermsofthecoveragemetric,indicatingthatthe
+largerthenumberofparameters,thebetterthegeneratedsum-
+maries. Besides, it is noted that BART does not significantly
+outperformLongformerintherelevancemetric,andthisis
+probablyattributed tothe powerfulunderstanding abilityof
+the PLMs, but BART still obtains decent improvements.
+5.5. Fleiss Kappa Analysis
+Toverifytheconsistencyofthefinalsummarygeneration
+quality, we select 5 experts to execute a consistency evalu-
+ation of 50 sampled summaries using Fleiss Kappa, where
+the scores are rated from 1 to 5, with 1 very negative, 2 neg-
+ative, 3 neutral, 4 positive, and 5 very positive. As shown
+intheTable4, thefinalFleissKappascoreis0.37, indicat-
+ing relatively low agreement. This can be attributed to the
+factthatsummarygenerationbelongstolanguagegeneration
+task, where different experts tend to have subjective views
+on summary quality (e.g., examples that annotated as posi-
+tiveorverypositiveareinconsistent,buttheyareallgood),
+which differs greatly from the objectivity of classification
+tasks. However, we also analyze the score distribution of all
+experts, finding that summaries rated 3 or above account for
+96.4%(241/250)ofthetotal,demonstratingthatthequalityof
+the annotated dataset is controllable and accurate. Moreover,
+we have conduct another round of Fleiss Kappa Analysis on
+the previous annotation scores from multiple raters. Specifi-
+cally, we combine score 1 and 2 into one bin, keep score 3
+as a separate bin, and combine score 4 and 5 into another
+bin. ThisresultinaFleissKappascoreof0.613184,which
+indicate the consistency evaluation.
+5.6. Input Length Analysis
+Inthissection,theinputlengthanalysisisperformedto
+study the model’s sensitivity to input length. We evaluate
+Wei Peng et al.: Preprint submitted to Elsevier Page 7 of 12CTISum
+(a) CTIS task. (b) APS task.
+Figure 3: Input length analysis of two tasks.
+(a) CTIS task. (b) APS task.
+Figure 4: Few shot experiments of the proposed two tasks.
+the impact of different input lengths on the BART-base (the
+purpose of using base model is to train the model quickly)
+on CTI and APS tasks. We divide the different length to
+getbetterinsightintothecurrentmodels. AsshowninFig-
+ure 3, where the x-axis represents the input length and the
+y-axis denotes the measure value of evaluation metrics. The
+conclusionscanbedrawn: 1)Astheinputlengthincreases,
+the modelperformance improves steadily, highlightingthe
+model’s ability to processand summarize longer sequences.
+2) As the length of BART reaches 1024 tokens, performance
+on our tasks continues to improve. To further investigate the
+impact of longer length, we increase the size of Longformer
+and find that lengthening to 3500tokens(75th percentile of
+length distribution) results in optimal performance, which
+suggests the advantage of long-distance modeling. 3) The
+model achieves poorer performance on the APS task com-
+pared to the CTIS task, indicating it struggles more with
+summarizing technical attack details than threat intelligence
+reports. In summary, the experiments provide insight into
+current models’ ability to capture long-distance dependen-
+cies in documents and summarize essential information as
+the input size varies. Further work could focus on improving
+themodel’sabilityoflengthtoboostperformanceonlengthy,
+technical summarization tasks.5.7. Few-shot Analysis
+Analyzing the impact of data size can help to understand
+therelationshipbetweendatasizeandsummarizingperfor-
+mance. To demonstrate such a relationship, in this section,
+few-shot analysis experiments on BART-base are conducted
+to study model’s sensitivity in different training data sizes.
+Weexperimentwith10%,25%,40%,55%,70%,and100%
+of the total training data to analyze the impact on CTIS task
+and APS task. The experimental results are shown in the
+Figure 4 with several conclusions: 1) Performance of BART-
+baseimproves asthetrainingdata sizeincreases,indicating
+thatmodelqualitybenefitsfrommoreabundanttrainingdata.
+Furthermore,theresultinthefigureisstillgrowing,which
+suggests further improvements with larger training data size.
+2) Performance on the APS task is worse than the CTIS task,
+especially in few shot setting (e.g., 10%, 25%). Therefore,
+howtoimprovetheperformanceofsummarizationmodels
+in few-shot setting for cybersecurity domain will be an im-
+portant future research track. And data augmentation is also
+another area worth researching.
+5.8. Case Analysis
+Qualitatively, we observe interesting examples on the
+BART-base from CTIS and APS tasks in Table 5. In case
+oneonCTIStask,themodelgenerateshallucinationabout
+Wei Peng et al.: Preprint submitted to Elsevier Page 8 of 12CTISum
+Table 5
+Case analysis on CTIS and APS tasks. Orange words mean the hallucination generated by
+the baseline. Blue words present the correct result. Red words indicate some of the key
+information that needs to be extracted.
+Task CTIS Task
+DocumentShadowGate Returns to Worldwide Operations With Evolved Greenflash Sundown ... After almost two
+years of sporadic restricted activity, the ShadowGate campaign has started delivering cryptocurrency
+miners with a newlyupgraded version of the Greenflash Sundown exploit kit ... ShadowGate was
+active since 2015 but restricted operations after a takedown in 2016...In April 2018 , ShadowGate
+was spotted spreading ...
+BARTThe PDF describes the activities of a threat actor group called ShadowGate ... The campaign has been
+actively evolving its exploit kit since 2016 ... ShadowGate started distributing cryptocurrency miners
+using a new version of Green_Sundown , likely to avoid ... The Monero
+Ground truthThe report analyzes the resurgence of a cybercrime campaign called ShadowGate, which is using an
+upgraded version of its custom exploit kit, Greenflash Sundown, to infect victims worldwide with
+cryptocurrency mining malware. ShadowGate was active since 2015 but restricted operations after
+a takedown in 2016.It recently resumed attacks using compromised ...
+Task APS Task
+DocumentStaring at a major financial resource crunch, MSME’s are worst affected due to the ongoing COVID-19
+pandemic. We observed one similar wave on MSME in late April 2020 — it was a phishing campaign luring
+victims with COVID-19 themed maldocs ... Victims received an email with attached zip“face mask
+order.zip” which contained the aforementioned maldoc ... The attack begins after opening “face mask
+order.doc” . This RTF is weaponized with exploit which triggers CVE-2017-11882 vulnerability to
+execute arbitrary code ... injected Agent Tesla payload in RegAsm.exe ...
+BART1. The phishing email contains a malicious RTF file titled “face mask order.zip" 2. The RTF contains an
+exploit that triggers CVE-2017-11882 to execute arbitrary code. 3. The exploit extracts the OLEobjects
+from RTF files. 4. The OLE object contains a VBScript script that executes an Equation Editor payload.
+5. The Equated Editor payload connects to a command and control server to receive commands.
+6. Command server sends commands to the C2 server to execute additional payloads. 7. Additional
+payloads are delivered to the infected ...
+Ground truth1. Gorgon APT sends phishing emails with COVID-19 themed Word documents to targets in the MSME
+sector. 2. The documents contain an exploit for CVE-2017-11882 to execute malicious code. 3. The code
+drops a visual basic script named ServerCrypted.vbs . 4. The VBScript executes a PowerShell command
+to download additional payloads. 5. The first payload is an injector DLL. 6. The second payload is the
+Agent Tesla Remote Access Trojan. 7. The injector DLL loads itself into memory using PowerShell.
+8. Agent Tesla is injected into the RegAsm.exe process. 9. Agent Tesla ...
+time since 2016 , leading to incorrect time information in
+the summary. This phenomenon likely occurs because if the
+source document contains multiple time details, the model
+mayconfuseaboutwhichtimepointsarebeingreferenced.
+Therefore,addressingthischallengewillbecriticalforfuture
+improvements. In case two on APS task, while generated
+attack process summary can include some factual informa-
+tionCVE-2017-11882 ,manyfactualinconsistencieserrors
+exist, such as OLEandEquation Editor . This stems from
+attack behaviors that exhibit properties of complexity, di-
+versity, and contextual dependence, which makes the APS
+task difficult. Thus, adapting appropriate methods to bet-
+ter capture the intricacies of attack behaviors represents a
+promising research direction. Overall, these caseshighlight
+importantlimitations,butalsoprovideexcitingopportunities
+toadvanceCTISandAPStasksthroughinnovationstarget-
+ingcore summarize-ability challenges inthecybersecurity
+domain.6. Conclusion
+Withalackofpubliclyavailableintelligencedata, inthis
+paper,wemakethefirstattempttoproposeCTISumbench-
+mark which provides a valuable resource to spur innovation
+inthiscriticalbutunobservedcybersecuritydomain. Thecre-
+ation of this intelligence-focused summarization benchmark
+representsanimportantsteptowarddevelopingAIsystems
+thatcaneffectivelyprocessandsynthesizeCTIreports. To
+combine system productivity and expert experience more
+efficiently,amulti-stageannotationpipelineis designedfor
+obtaining the high-quality dataset. Our experiments reveal
+that while current models can produce decent summaries,
+there is significant room for improvement in capturing key
+detailsaccurately. Thetechnicalcybersecurityterminology
+and complex contextual concepts present in the reports pose
+great challenges for generating intelligence summaries. In
+thefuturework,leveragingtransferlearningandLLMstothe
+Wei Peng et al.: Preprint submitted to Elsevier Page 9 of 12CTISum
+cybersecurity domain can provide a starting point, as well as
+exploringadaptationsofsummarizationtechniquestoaddress
+theuniquecharacteristicsofthecyberthreatintelligencefield.
+Ethical statement is in Appendix A.1.
+Acknowledgments
+We thank all anonymous reviewers for their constructive
+comments. This work is supported by the Zhongguancun
+Laboratory.
+A. Appendix
+A.1. Ethical Statement
+All data in CTISum dataset has been double checked
+byexpertsthatmajorinintelligenceanalysis,andmanually
+checkedtoensuretheabsenceofanyethicalorpoliticalinac-
+curacies.
+A.2. Details of Regular Expression
+During the process of filtering and cleaning the parsed
+PDF data, in order to reduce the burden of manual checking
+by annotators, we first sample and observe 50 examples, and
+then extract some common features to formulate into regular
+expressions for automatically cleaning the data. Specifically,
+details of regular expression are in the following:
+•Removing consecutive dots (table of contents)
+•Deleting redundant newlines/carriage returns
+•Removing extra whitespace between characters
+•Deleting multiple consecutive lines of IP addresses,
+hashes, etc.
+•Removing website links starting with “http”
+•RemovingThai,Koreanandothernon-Englishcharac-
+ters
+By automating the cleaning of patterns and noise with regex,
+we aim to improve efficiency and reduce manual effort. The
+regular expressions are tuned iteratively based on continu-
+ously sampling and inspecting. This method allows us to
+programmatically clean a significant portion of repetitive is-
+sues in parsed PDF data before manual review. In the future,
+wecancontinuerefiningtheregexandidentifyingnewpat-
+ternstocleanthedata. Thegoalistominimizetheamount
+of manual effort while ensuring high-quality cleaned data.
+Some utilized code of regular expression (Python) can be
+seen as follows:
+r'\.{2 ,} '
+r'\{2 ,} '
+r'\ s \ s+ '
+r'( \ d{1 ,3}\.){3}\d{1 ,3}|[a −f0−9]{32,64} '
+r'^(\ $.+[\n])+|^\w+\([^\)]+\)[\ s \S]{1}\{[
+\ r ]\ s.+ '
+r'https ?://(?:[ −\w.]|(?:%[\ da −fA−F]{2}))+ 'References
+[1] , 2020. Symantec security center .
+[2] , 2020. Threat encyclopedia .
+[3]Beltagy, I., Peters, M.E., Cohan, A., 2020. Longformer: The long-
+document transformer. arXiv preprint arXiv:2004.05150 .
+[4]Celikyilmaz, A., Bosselut, A., He, X., Choi, Y., 2018. Deep com-
+municating agents for abstractive summarization. arXiv preprint
+arXiv:1803.10357 .
+[5]Cheng, J., Lapata, M., 2016. Neural summarization by extracting sen-
+tences and words, in: Proceedings of the 54th Annual Meeting of the
+AssociationforComputationalLinguistics,ACL2016,August7-12,
+2016, Berlin,Germany, Volume1: LongPapers, TheAssociation for
+ComputerLinguistics. URL: https://doi.org/10.18653/v1/p16-1046 ,
+doi:10.18653/V1/P16-1046 .
+[6] Claude, A., 2023a. 2. anthropic blog 2023, july 11.
+[7] Claude, A.I., 2023b. Anthropic blog 2023 march 14.
+[8]Cohan, A., Dernoncourt, F., Kim, D.S., Bui, T., Kim, S., Chang,
+W., Goharian, N., 2018. A discourse-aware attention model for ab-
+stractivesummarizationoflongdocuments,in: Walker,M.A.,Ji,H.,
+Stent, A. (Eds.), Proceedings of the 2018 Conference of the North
+American Chapter of the Association for Computational Linguis-
+tics: Human Language Technologies, NAACL-HLT, New Orleans,
+Louisiana, USA, June 1-6, 2018, Volume 2 (Short Papers), Asso-
+ciation for Computational Linguistics. pp. 615–621. URL: https:
+//doi.org/10.18653/v1/n18-2097 , doi: 10.18653/V1/N18-2097 .
+[9]Cui,T.,Wang,Y.,Fu,C.,Xiao,Y.,Li,S.,Deng,X.,Liu,Y.,Zhang,
+Q., Qiu, Z., Li, P., et al., 2024. Risk taxonomy, mitigation, and assess-
+ment benchmarks of large language model systems. arXiv preprint
+arXiv:2401.05778 .
+[10]CyberMonitor,R.H.,etal.,2019. Aptandcybercriminalscampaign
+collection .
+[11]Devlin, J., Chang, M., Lee, K., Toutanova, K., 2019. BERT: pre-
+trainingofdeepbidirectionaltransformersforlanguageunderstand-
+ing, in: Burstein, J., Doran, C., Solorio, T. (Eds.), Proceedings of
+the2019ConferenceoftheNorthAmericanChapteroftheAssocia-
+tionforComputationalLinguistics: HumanLanguageTechnologies,
+NAACL-HLT 2019, Minneapolis, MN, USA, June 2-7, 2019, Volume
+1 (Long and Short Papers), Association for Computational Linguis-
+tics. pp. 4171–4186. URL: https://doi.org/10.18653/v1/n19-1423 ,
+doi:10.18653/V1/N19-1423 .
+[12]ofEngland,B.,2016. Cbestintelligence-ledtesting: Understanding
+cyber threat intelligence operations.
+[13]Erkan,G.,Radev,D.R.,2004. Lexrank: Graph-basedlexicalcentrality
+as salience in text summarization. J. Artif. Intell. Res. 22, 457–479.
+URL: https://doi.org/10.1613/jair.1523 , doi: 10.1613/JAIR.1523 .
+[14] Hsiao, E.S., Collins, E., 2023. Try bard and share your feedback.
+[15]Hsu, T., Suhara, Y., Wang, X., 2022. Summarizing community-based
+question-answer pairs, in: Goldberg, Y., Kozareva, Z., Zhang, Y.
+(Eds.), Proceedings of the 2022 Conference on Empirical Methods
+inNaturalLanguageProcessing,EMNLP2022,AbuDhabi,United
+Arab Emirates, December 7-11, 2022, Association for Computational
+Linguistics.pp.3798–3808. URL: https://doi.org/10.18653/v1/2022.
+emnlp-main.250 , doi: 10.18653/V1/2022.EMNLP-MAIN.250 .
+[16]Huang, L., Cao, S., Parulian, N.N., Ji, H., Wang, L., 2021. Effi-
+cient attentions for long document summarization, in: Toutanova, K.,
+Rumshisky,A.,Zettlemoyer,L.,Hakkani-Tür,D.,Beltagy,I.,Bethard,
+S., Cotterell, R., Chakraborty, T., Zhou, Y. (Eds.), Proceedings of the
+2021ConferenceoftheNorthAmericanChapteroftheAssociationfor
+Computational Linguistics: Human Language Technologies, NAACL-
+HLT2021,Online,June6-11,2021,AssociationforComputational
+Linguistics.pp.1419–1436. URL: https://doi.org/10.18653/v1/2021.
+naacl-main.112 , doi: 10.18653/V1/2021.NAACL-MAIN.112 .
+[17]Jo,H.,Lee,Y.,Shin,S.,2022. Vulcan: Automaticextractionandanal-
+ysisofcyberthreatintelligencefromunstructuredtext. Comput.Se-
+cur.120,102763. URL: https://doi.org/10.1016/j.cose.2022.102763 ,
+doi:10.1016/J.COSE.2022.102763 .
+[18]Lebanoff,L.,Song,K.,Dernoncourt,F.,Kim,D.S.,Kim,S.,Chang,
+W.,Liu,F.,2019. Scoringsentencesingletonsandpairsforabstractive
+Wei Peng et al.: Preprint submitted to Elsevier Page 10 of 12CTISum
+summarization. arXiv preprint arXiv:1906.00077 .
+[19]Lewis, M., Liu, Y., Goyal, N., Ghazvininejad, M., Mohamed, A.,
+Levy, O., Stoyanov, V., Zettlemoyer, L., 2020. BART: denoising
+sequence-to-sequence pre-training for natural language generation,
+translation,andcomprehension,in: Jurafsky,D.,Chai,J.,Schluter,N.,
+Tetreault, J.R. (Eds.), Proceedings of the 58th Annual Meeting of the
+AssociationforComputationalLinguistics,ACL2020,Online,July
+5-10,2020,AssociationforComputationalLinguistics.pp.7871–7880.
+URL: https://doi.org/10.18653/v1/2020.acl-main.703 , doi: 10.18653/
+V1/2020.ACL-MAIN.703 .
+[20]Lin,C.Y.,2004. Rouge: Apackageforautomaticevaluationofsum-
+maries, in: Text summarization branches out, pp. 74–81.
+[21]Liu, Y., 2019. Fine-tune BERT for extractive summarization.
+CoRR abs/1903.10318. URL: http://arxiv.org/abs/1903.10318 ,
+arXiv:1903.10318 .
+[22]Liu, Y., Lapata, M., 2019. Text summarization with pretrained
+encoders, in: Inui, K., Jiang, J., Ng, V., Wan, X. (Eds.), Proceed-
+ings of the 2019 Conference on Empirical Methods in Natural Lan-
+guage Processing and the 9th International Joint Conference on
+Natural Language Processing, EMNLP-IJCNLP 2019, Hong Kong,
+China,November3-7, 2019,AssociationforComputationalLinguis-
+tics. pp. 3728–3738. URL: https://doi.org/10.18653/v1/D19-1387 ,
+doi:10.18653/V1/D19-1387 .
+[23]Liu, Y., Liu, P., Radev, D.R., Neubig, G., 2022. BRIO: bringing order
+toabstractivesummarization,in: Muresan,S.,Nakov,P.,Villavicencio,
+A.(Eds.),ACL2022,AssociationforComputationalLinguistics.pp.
+2890–2903. URL: https://doi.org/10.18653/v1/2022.acl-long.207 ,
+doi:10.18653/V1/2022.ACL-LONG.207 .
+[24]Loshchilov, I., Hutter, F., 2017. Fixing weight decay regularization in
+adam. ArXiv abs/1711.05101.
+[25]Luong,T.,Pham,H.,Manning,C.D.,2015. Effectiveapproachesto
+attention-based neural machine translation, in: Màrquez, L., Callison-
+Burch, C., Su, J., Pighin, D., Marton, Y. (Eds.), Proceedings of the
+2015 Conference on Empirical Methods in Natural Language Process-
+ing, EMNLP 2015, Lisbon, Portugal, September 17-21, 2015, The
+Association for Computational Linguistics. pp. 1412–1421. URL:
+https://doi.org/10.18653/v1/d15-1166 , doi: 10.18653/V1/D15-1166 .
+[26]Mukherjee, R., Bohra, A., Banerjee, A., Sharma, S., Hegde, M.,
+Shaikh, A., Shrivastava, S., Dasgupta, K., Ganguly, N., Ghosh, S.,
+Goyal, P., 2022. Ectsum: A new benchmark dataset for bullet point
+summarization of long earnings call transcripts, in: Goldberg, Y.,
+Kozareva, Z., Zhang, Y. (Eds.), Proceedings of the 2022 Confer-
+ence on Empirical Methods in Natural Language Processing, EMNLP
+2022,AbuDhabi,UnitedArabEmirates,December7-11,2022,As-
+sociation for Computational Linguistics. pp. 10893–10906. URL:
+https://doi.org/10.18653/v1/2022.emnlp-main.748 , doi: 10.18653/V1/
+2022.EMNLP-MAIN.748 .
+[27]Nallapati, R., Zhai, F., Zhou, B., 2017. Summarunner: A recurrent
+neural network based sequence model for extractive summarization
+ofdocuments, in: ProceedingsoftheAAAIconferenceonartificial
+intelligence.
+[28]Nallapati, R., Zhou, B., Gulcehre, C., Xiang, B., et al., 2016. Abstrac-
+tive text summarization using sequence-to-sequence rnns and beyond.
+arXiv preprint arXiv:1602.06023 .
+[29]Narayan,S.,Cohen,S.B.,Lapata,M.,2018. Don’tgivemethedetails,
+just the summary! topic-aware convolutional neural networks for
+extreme summarization, in: Riloff, E., Chiang, D., Hockenmaier, J.,
+Tsujii, J. (Eds.), Proceedings of the 2018 Conference on Empirical
+MethodsinNaturalLanguageProcessing,Brussels,Belgium,October
+31 - November 4, 2018, Association for Computational Linguistics.
+pp. 1797–1807. URL: https://doi.org/10.18653/v1/d18-1206 , doi: 10.
+18653/V1/D18-1206 .
+[30] OpenAI, 2023. Gpt-4 technical report. ArXiv .
+[31]Peng, W., Hu, Y., Yu, J., Xing, L., Xie, Y., 2021. APER: adaptive
+evidence-drivenreasoningnetworkformachinereadingcomprehen-
+sionwithunanswerablequestions. Knowl.BasedSyst.229,107364.
+URL: https://doi.org/10.1016/j.knosys.2021.107364 , doi: 10.1016/J.
+KNOSYS.2021.107364 .[32]Peng, W., Qin, Z., Hu, Y., Xie, Y., Li, Y., 2023. FADO: feedback-
+aware double controlling network for emotional support conversation.
+Knowl. Based Syst. 264, 110340. URL: https://doi.org/10.1016/j.
+knosys.2023.110340 , doi: 10.1016/J.KNOSYS.2023.110340 .
+[33]Radford, A., Narasimhan, K., Salimans, T., Sutskever, I., et al., 2018.
+Improving language understanding by generative pre-training .
+[34]Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena,
+M.,Zhou,Y.,Li,W.,Liu,P.J.,2020. Exploringthelimitsoftransfer
+learningwithaunifiedtext-to-texttransformer.TheJournalofMachine
+Learning Research 21, 5485–5551.
+[35]Rush,A.M.,Chopra,S.,Weston,J.,2015. Aneuralattentionmodelfor
+abstractive sentencesummarization. arXiv preprintarXiv:1509.00685
+.
+[36]Schatz, D., Bashroush, R., Wall, J.A., 2017. Towards a more rep-
+resentative definition of cyber security. J. Digit. Forensics Secur.
+Law 12, 53–74. URL: https://doi.org/10.15394/jdfsl.2017.1476 ,
+doi:10.15394/JDFSL.2017.1476 .
+[37]See, A., Liu, P.J., Manning, C.D., 2017. Get to the point: Summariza-
+tion with pointer-generator networks, in: Barzilay, R., Kan, M. (Eds.),
+Proceedingsofthe55thAnnualMeetingoftheAssociationforCompu-
+tational Linguistics, ACL 2017, Vancouver, Canada, July 30 - August
+4, Volume 1: Long Papers, Association for Computational Linguis-
+tics. pp. 1073–1083. URL: https://doi.org/10.18653/v1/P17-1099 ,
+doi:10.18653/V1/P17-1099 .
+[38]Shukla, A., Bhattacharya, P., Poddar, S., Mukherjee, R., Ghosh, K.,
+Goyal, P., Ghosh, S., 2022. Legal case document summarization:
+Extractive and abstractive methods and their evaluation, in: He, Y.,
+Ji, H., Liu, Y., Li, S., Chang, C., Poria, S., Lin, C., Buntine, W.L.,
+Liakata, M., Yan, H., Yan, Z., Ruder, S., Wan, X., Arana-Catania,
+M., Wei,Z., Huang,H., Wu,J., Day, M.,Liu, P.,Xu,R.(Eds.),Pro-
+ceedings of the 2nd Conference of the Asia-Pacific Chapter of the
+Associationfor ComputationalLinguistics andthe12th International
+Joint Conference on Natural Language Processing, AACL/IJCNLP
+2022 - Volume 1: Long Papers, Online Only, November 20-23, 2022,
+Association for Computational Linguistics. pp. 1048–1064. URL:
+https://aclanthology.org/2022.aacl-main.77 .
+[39]van Tilborg, H.C.A. (Ed.), 2005. Encyclopedia of Cryptography and
+Security. Springer. URL: https://doi.org/10.1007/0-387-23483-7 ,
+doi:10.1007/0-387-23483-7 .
+[40]Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei,
+Y., Bashlykov, N., et al, 2023. Llama 2: Open foundation and fine-
+tuned chat models. arXiv preprint arXiv:2307.09288 .
+[41]Vaswani,A.,Shazeer,N.,Kaiser,L.,Polosukhin,I.,etal.,2017. At-
+tention is all you need, in: NIPS.
+[42]Zeng,A.,Liu,X.,Du,Z.,Wang,Z.,Lai,H.,Ding,M.,Yang,Z.,Xu,
+Y., Zheng, W., Xia, X., et al., 2022. Glm-130b: An open bilingual
+pre-trained model. arXiv preprint arXiv:2210.02414 .
+[43]Zhang, T., Kishore, V., Wu, F., Weinberger, K.Q., Artzi, Y., 2020.
+Bertscore: Evaluating text generation with BERT, in: 8th Interna-
+tional Conference on Learning Representations, ICLR 2020, Ad-
+dis Ababa, Ethiopia, April 26-30, 2020, OpenReview.net. URL:
+https://openreview.net/forum?id=SkeHuCVFDr .
+[44]Zhong, M., Liu, P., Chen, Y., Wang, D., Qiu, X., Huang, X., 2020.
+Extractivesummarizationastextmatching,in: Jurafsky,D.,Chai,J.,
+Schluter, N., Tetreault, J.R. (Eds.), Proceedings of the 58th Annual
+Meeting of the Association for Computational Linguistics, ACL 2020,
+Online,July5-10,2020,AssociationforComputationalLinguistics.
+pp. 6197–6208.
+[45]Zhou, Q., Yang, N., Wei, F., Huang, S., Zhou, M., Zhao, T., 2018.
+Neuraldocumentsummarizationbyjointlylearningtoscoreandselect
+sentences, in: Gurevych, I., Miyao, Y. (Eds.), Proceedings of the 56th
+Annual Meeting of the Association for Computational Linguistics,
+ACL 2018, Melbourne, Australia, July 15-20, 2018, Volume 1: Long
+Papers,AssociationforComputationalLinguistics.pp.654–663. URL:
+https://aclanthology.org/P18-1061/ , doi: 10.18653/V1/P18-1061 .
+[46]Zhu, Y., Yang, X., Wu, Y., Zhang, W., 2023. Leveraging summary
+guidanceonmedical report summarization. IEEEJ.Biomed.Health
+Informatics 27, 5066–5075. doi: 10.1109/JBHI.2023.3304376 .
+Wei Peng et al.: Preprint submitted to Elsevier Page 11 of 12CTISum
+Wei Peng received the B.S. degree in Computer
+Science and Technology from Chang’an Univer-
+sity, Xi’an, China, in 2018 and his PhD degree
+in Institute of Information Engineering, Chinese
+Academy of Sciences, Beijing, China, in 2023. He
+haspublishedhisresearchinhighqualityjournals
+and conferences in the area, including KBs, Neuro-
+computing,IJCAI,SIGIR,AAAI,EMNLP,etc. His
+research interests include summarization, natural
+language generation and question answering.
+JunmeiDingisadoctoralcandidateattheSchool
+ofCyberspaceSecurity,BeijingUniversityofPosts
+and Telecommunications, holding a Master’s de-
+greein SoftwareEngineering fromShanxi Univer-
+sity. Hermainresearchdirectionsareanomalybe-
+havior detection, threatdetection, and cyber threat
+intelligence summarization.
+Wei Wang received the doctor’s degree in Institute
+of Information Engineering, School of Cyber Secu-
+rity, University of Chinese Academy of Sciences.
+She is currently a research assistant of Zhongguan-
+cun Laboratory. Her research interests include sys-
+tem virtualization and network security. She has
+published several papers in journals and confer-
+ences including TSC, ICCD, VEE.
+Lei Cui is an associate professor of Zhongguan-
+cunLaboratory, Beijing. Hereceived hisDoctor’s
+degreeinComputerSoftwareandTheoryfromBei-
+hang University in 2015. His research interests
+include operating system, system security, and sys-
+temvirtualization. Hehaspublishedover40papers
+in journals and conferences including TPDS, TIFS,
+TSC, ISSTA, ICCD, RAID, VEE, LISA, DSN.
+Wei Cai is an assistant research scientist in the Net-
+work Connection Security Department at Zhong-
+guancunLaboratory. HeholdsaPhDfromtheIn-
+stitute of Information Engineering at the Chinese
+Academy of Sciences. His research primarily fo-
+cusesonmobileencryptedtrafficanalysisandad-
+versarial machine learning.
+ZhiyuHaoiscurrentlyaprofessorofZhongguancun
+Laboratory,Beijing. HereceivedhisPh.Ddegreein
+ComputerSystemArchitecturefromHarbinInsti-
+tuteofTechnologyin2007. Hisresearchinterests
+include network security, system virtualization. He
+haspublishedover50papersinjournalsandconfer-
+ences including TPDS, ICPP, IEEE S&P, ICA3PP
+and CLUSTER.
+Xiaochun Yun is the Deputy Director of the Na-
+tional Computer Network Emergency Response
+Technical Team/Coordination Center of China. He
+obtained a Bachelor’s degree in Computer Science
+andApplicationfromHarbinInstituteofTechnol-
+ogy,andaPh.D.degreeinComputerSystemArchi-
+tecturefromthesameuniversity. Hisresearchareas
+include network malware detection and prevention
+technology,securityanalysis,andcontentsecurity.
+He has published over 100 academic papers.
+Wei Peng et al.: Preprint submitted to Elsevier Page 12 of 12

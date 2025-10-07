@@ -1,0 +1,497 @@
+Threat Report - 2024100852272 Ver 1.0
+FortiGuard Research  | FortiRecon
+A Deep Dive into Cyber Threats surrounding U.S. Ele ction
+2024
+ | Medium Oct 08, 2024 TLP
+Executive Summary:
+The United States election process is a fundamental  pillar of its democracy, involving a vast network of federal and state agencies, political
+parties, candidates, and, most importantly, the vot ing public. As elections approach, it's imperative to recogniz e and understand the array of
+cyber threats that could impact the integrity and t rustworthiness of this critical process.
+ 
+Cyber adversaries, including state-sponsored actors  and hacktivist groups, are increasingly active in the lead-up to elections. For US-specific
+threats, the dark web has become a hub for maliciou s actors to trade sensitive information and develop  strategies to exploit vulnerabilities.
+Hacktivist groups are also mobiliz ing, aiming to di srupt proceedings or sway public opinion through co ordinated cyber campaigns.
+ 
+However, one of the biggest threats is state-sponso red entities that employ sophisticated tactics to i nfiltrate systems, steal data, and
+disseminate misinformation. Their activities can un dermine confidence in the electoral process and pot entially alter outcomes. Malicious
+actors are also utiliz ing artificial intelligence t o create and automate the spread of disinformation and misinformation, thereby shaping public
+opinion in unintended ways. Commonly exploited vuln erabilities, such as outdated software and inadequa te security protocols, make systems
+more susceptible to attacks.
+ 
+Election infrastructure, government agencies engage d in electoral processes, political campaigns, medi a organiz ations, and technology
+providers could all be at risk during this time. Th ese and similar entities must prioritiz e cybersecur ity measures to protect against potential
+breaches and ensure the integrity of the electoral process. This report provides a comprehensive overv iew of the potential cyber threat
+landscape and critical vulnerabilities that could i mpact the election process. This analysis is crucia l for preparing and safeguarding against
+cyberattacks that could disrupt or influence electi on outcomes.
+ 
+In this report, FortiGuard Labs Threat Research pro vides an in-depth analysis of threats gathered from  January 2024 to August 2024 that may
+affect US-based entities and the electoral process.  It also examines the diverse array of challenges p osed by cyber threats, assesses their
+impact on the present US elections, and provides gu idance on how to protect critical environments and systems.
+ 
+Content:
+Scam targeting US Elections
+Darknet Landscape
+Espionage Landscape
+Hacktivist Landscape
+Ransomware Landscape
+Vulnerability Landscape
+Conclusion
+Recommendations
+Key Observations
+ 
+It is important to note that while not all these da ta points may seem directly connected to the US ele ction, they indicate a spike in threat activity tha t
+coincides with that event. In addition, they all in clude either access to the private data of US citiz ens, which could be used for voter fraud or the
+distribution of misinformation, access to compromis ed government and business entities that could be t argeted for things like fraud or the disruption
+of critical infrastructures, or a rise in malicious  activities which could be used to exploit users, s uch as those interested in the election, or to disr upt
+information systems or critical infrastructure.
+ 
+Scams Targeting US Elections:
+Since January 2024, we have identified the registra tion of over 1,000 new domain names. These domains follow particular patterns,
+frequently incorporating election-related terms and  references to prominent political figures.
+The majority of these domains are registered in the  United States (636 domains), followed by Canada (7 2 domains) and Germany (22
+domains).
+The most used hosting providers for these election- themed websites are AMAZON-02, which currently host s 458 domains,
+CLOUDFLARENET, with 71 domains, and NAMECHEAP-NET, which hosts 70 domains.
+One threat actor (TA) sells two distinct phishing k its, priced at $1,260 each, designed to impersonate  political leaders Donald Trump and
+Kamala Harris.
+ 
+Darknet Landscape:
+Over 1.3 billion rows of combo lists, which include  usernames, email addresses, and passwords, signify  a considerable risk for credential-
+stuffing attacks. In such attacks, cybercriminals u se these stolen credentials to gain unauthoriz ed ac cess to accounts, making it a valid
+and substantial security concern.
+The discovery of 300,000 rows of credit card data, which include CVV, name, card number, expiry date, and date of birth, highlights
+potential financial fraud risks targeting voters an d election officials.
+Over 2 billion rows of user databases on the Darkne t indicate a heightened exposure to identity theft and targeted phishing attacks.
+10% of the posts on Darknet forums are associated w ith Social Security Number (SSN) databases, which p oses a significant threat by
+increasing the risk of personal data breaches.
+Around 3% of the posts on Darknet forums involve da tabases related to business and government entities . These databases hold critical
+organiz ational data that is vulnerable to cyber exp loits.
+The majority of network access advertisements on th e Darknet focus on corporate VPNs (35%), followed c losely by Remote Desktop
+Protocol (RDP) access (32%) and Remote Desktop Web (RDWeb) access (25%).
+Espionage Landscape:
+A total of 23 state-sponsored adversaries have been  documented targeting the US, with actors from Chin a leading in activity, followed
+by Russia and Iran.
+We anticipate increased cyber espionage activities from China, Russia, Iran, and North Korean threat a ctors aimed at disrupting or
+manipulating the US electoral process and political  landscape.
+AI-enhanced and AI-generated audio content are beco ming increasingly potent tools in disinformation ca mpaigns. Our research has
+revealed that threat actors on the Darknet are adve rtising deepfake services starting at just USD 15, making this technology highly
+accessible for malicious purposes. A recent instanc e demonstrated the danger of this technology when a  deepfake of President Joe
+Biden’s voice was used in a robocall during the New  Hampshire primary , highlighting how easily such technology can be we aponiz ed.
+ 
+Hacktivist Landscape:
+NoName057(16), CyberArmyofRussia_Reborn, and Killne t are pro-Russian hacktivist groups with recently i ncreased activity that could play
+a significant role in disrupting elections. Their c apabilities and historical activities suggest they have the means to impact processes if
+they choose to engage in such actions.
+GARNESIA_TEAM, FromLammerToMastah, and Z-BL4CX-H4T are two prominent groups that have conducted the mo st operations since
+January 2024.
+Ransomware Landscape:
+Over 1000 ransomware victims have been reported fro m January 2024 to the time of publication of this r eport.
+'Lockbit3,   'Play,' and 'RansomHub' are the top thr ee ransomware groups focused on targeting the US. T heir primary target is the
+Manufacturing sector, followed by the Business Serv ices and Construction industries.
+We have observed a notable spike in ransomware atta cks against the US Government (+28%), Hospitality ( +18%), Real Estate (+5%), and
+Transportation (+5%) compared to 2023.
+Vulnerability Landscape:In 2024, there were 291 known exploited CVEs, with 128 added to CISA's KEV and 55 specifically used in  targeted threat campaigns against
+US infrastructure.
+Of the vulnerabilities that have been exploited, es pionage actors have exploited 46%, cybercrime actor s are responsible for exploiting 39%,
+and ransomware groups account for 15%.
+ 
+Scams Targeting US Elections
+Since January 2024, FortiGuard Labs Threat Research  has identified the registration of over 1000+ new domain names . These domains follow
+particular patterns, frequently incorporating elect ion-related terms and references to prominent polit ical figures. Examples of these patterns
+include " votefor ," "vote4 ," "trump2024 ," "voteharris ," "2024harris-kelly ", "trumpvancetransition ," "uselection ," etc.
+ 
+The prevalence of these terms suggests that threat actors are interested in leveraging the heightened interest surrounding the 2024 US
+elections to potentially conduct malicious activiti es such as phishing campaigns, disinformation, or l aunching cyberattacks to influence voter
+behavior and undermine electoral integrity.
+(Newly registered domain names incorporating electi on-related terms)
+ 
+Analysis of  Potentially Malicious Domain Registrati ons
+Domains by IP Address : A notable concentration of domains is associated with a limited number of IP addresses. Specifically , the IP
+addresses 15.197.148.33 and 3.33.130.190 each host 126 domains, making them the most active in our dat aset. These domains hosted on
+the IPs indicate a centraliz ed approach by threat a ctors to efficiently manage multiple malicious doma ins to execute large-scale cyber
+campaigns.
+Dominance of  Registrant Countries : The majority of these domains are registered in t he United States (636 domains), followed by
+Canada (72 domains) and Germany (22 domains). The h igh number of US-based registrations indicates eith er the presence of domestic
+threat actors or the utiliz ation of US hosting serv ices to hide the origin of malicious activities.
+Pref erred Hosting Providers : Analysis of hosting providers reveals a strong pr eference for well-known and widely used services.
+AMAZON-02 leads with 458 domains, followed by CLOUD FLARENET (71 domains) and NAMECHEAP-NET (70 domains ). The reliance on major
+hosting platforms such as Amaz on Web Services (AWS)  and Cloudflare suggests that threat actors are lev eraging these reputable
+services to enhance the legitimacy and resilience o f their malicious domains.
+ 
+Donation Scam
+With the US election approaching, the surge in poli tical engagement and donations provides a fertile g round for cybercriminals. As seen in past
+elections, particularly the 2020 race, where contri butions reached unprecedented levels, the influx of  funds makes campaigns attractive
+targets for malicious actors. The increase in finan cial activity around elections creates numerous opp ortunities for exploitation, especially by
+those seeking to take advantage of heightened publi c interest and large-scale political donations.
+ 
+FortiGuard Labs Threat Research has identified a nu mber of fraudulent fundraising websites, including secure[.]actsblues[.]com , which is
+designed to imitate the legitimate ActBlue site ( secure[.]actblue[.]com ). ActBlue is a nonprofit American fundraising plat form and political
+action committee founded in 2004. This deceptive we bsite is set up to collect donations and personal d etails such as credit card information,
+names, emails, and full residential addresses.
+ 
+(Newly registered website impersonating ActBlue)
+Domain Name ACTSBLUES.COM
+Registered On 12th September 2024Registrar Hosting Concepts B.V. d/b/a Registrar.eu
+Name Serversjaime.ns.cloudflare.com
+treasure.ns.cloudflare.com
+IP Address104.21.1.2310 (Cloudflare)
+172.67.152.143 (Cloudflare)
+Hosting Provider Cloudflare, Inc.
+ 
+Another fraudulent website registered in July 2024 designed to collect donations is donatekamala-harris[.]org . 
+ (A new website featuring Kamala Harris to solicit d onations)
+ 
+Domain Name DONATEKAMALA-HARRIS.ORG
+Registered  22nd July 2024
+Registrar Namesilo, LLC
+Name Serversrs92.rcnoc.com
+rs91.rcnoc.comIP Address 162.55.31.172
+Hosting Provider Hetz ner Online GmbH
+ 
+Additionally, cybercriminals across Darknet forums are viewing the upcoming election as a prime opport unity for quick profits. In one recent
+post, we observed an interesting project featuring phishing pages designed to impersonate political le aders Donald Trump and Kamala Harris.
+The TA is offering two separate phishing kits for $ 1,260 each—one targeting Donald Trump supporters an d the other targeting Kamala Harris
+supporters. These kits are designed to harvest pers onal information, including names, addresses, and c redit card (donation) details.
+ 
+The consequences of these phishing threats are sign ificant, as they can lead to the widespread theft o f personal information, including
+names, addresses, and credit card details. This put s individuals at risk of financial fraud and underm ines trust in the political process. By
+targeting supporters of political figures like Dona ld Trump and Kamala Harris, cybercriminals could cr eate division, spread misinformation, and
+manipulate voters' opinions. Additionally, such att acks can lead to identity theft and facilitate furt her exploitation through the resale of stolen
+data on dark web marketplaces. Below is the attache d screenshot of the forum post.
+ 
+(Darknet forum post advertisement of phishing proje ct)
+ 
+ Darknet Landscape
+The Darknet serves as a central platform for many o f the cyber threats that pose significant risks to the integrity of the US elections. Malicious
+actors use this platform to exchange sophisticated tools, exploit methods, and unauthoriz ed network ac cess credentials that could result in
+political influence and disruption. Dark web forums  can also facilitate the sale of sensitive electora l information, discussions on vulnerabilities
+within election systems, and the coordination of cy berattacks to undermine the electoral process.
+ 
+Threats to US elections from these Darknet activiti es include data breaches of voter databases, theft of intellectual property related to
+election technology, and the sale of insider inform ation that could be used to manipulate election out comes. Such activities can lead to
+operational disruptions and erosion of public trust , along with significant financial repercussions.
+ 
+The following section will delve deeper into the se curity landscape surrounding election databases and  the types of access being advertised
+and shared by threat actors, highlighting the subst antial risks these activities pose to the US electo ral system.
+Database Advertisements
+Our analysis reveals a significant number of divers e databases available on Darknet forums targeting t he United States, posing serious threats
+to the integrity of US elections.
+ 
+Approximately 40% of the posts on Darknet involve c ombo lists (usernames/email addresses and passwords ). These combo lists can be
+used for large-scale credential stuffing and unauth oriz ed access, potentially compromising voter data,  election systems, and sensitive
+information. More than 1.3 billion rows of combo li sts are currently being advertised across different  Darknet forums.
+Credit card and banking data, constituting about 21 % of the posts with 300k rows, pose significant ris ks of financial fraud and phishing,
+targeting users in the US. These actions could lead  to campaign disruptions, undermining voter outreac h, destabiliz ing financial support
+for candidates, or enabling fraudulent campaign fun ding.
+User databases, such as those for doctors, musician s, and investors, make up roughly 19% of the posts,  with over 2 billion rows. These
+databases can facilitate identity theft and targete d phishing, risking the security of those involved in elections and eroding public trust.
+Social Security Number (SSN) databases, about 10% o f the posts, increase the risk of data breaches and  cyberattacks, with one instance
+advertising an SSN database with over 19 gigabytes (about 80 million rows) of data.
+Business and government databases each account for about 3% of posts, holding records on user informat ion and government details.
+Notably, a threat actor from the group CyberNiggers  claimed a breach of the US Department of Transport ation's database, leaking over
+5.8 million entries.
+Lastly, although less common at 2% and 1%, KYC data bases and business combo lists still pose substanti al risks for sophisticated
+cyberattacks. One reported case involved a KYC data base containing over ten terabytes of data.
+ 
+(Darknet database proliferation posing challenges t o US electoral security and citizens)
+ 
+ 
+Network Access Advertisements
+Network access refers to the various levels or meth ods of unauthoriz ed access to digital assets and sy stems advertised or offered for sale on
+Darknet forums. These include access credentials, r emote access tools, exploits, backdoors, or comprom ised accounts, among others. These
+advertisements typically target TAs seeking unautho riz ed access to systems or data for malicious purpo ses. The pricing of access advertised
+on the Darknet forums can fluctuate significantly, depending on the type of organiz ation and the count ry. Based on our observation, these
+types of accesses are often obtained through privat e stealer logs.
+ 
+The table below presents the most commonly advertis ed network access types on Darknet forums targeting  the United States.
+ (Network access advertisement types) 
+Below are the various types of network access predo minantly shared and advertised by the following thr eat actors (TAs).
+Corporate VPNs :
+Yesdaddy: 104 VPN posts (primarily targeting the US A)
+Remote Desktop Protocol (RDP) :
+klk005: 65 RDP posts targeting the USA
+myKarma: 30 RDP posts targeting the USA
+ 
+RDWeb Access:
+sandocan: Over 90 RDWeb targeting the USA
+ProfessorKliq: More than 30 RDWeb targeting the USA
+ 
+Espionage Landscape
+Nation-state actors or APT groups have the resource s to engage in cyber espionage, such as gathering i ntelligence on the US electoral process,
+political landscape, and strategic interests. Espio nage can involve reconnaissance, phishing, and malw are attacks targeting government
+agencies, political organiz ations, and critical inf rastructure or the distribution of disinformation.
+ 
+This section examines the data we have compiled on espionage activities targeting the US by foreign ad versaries this past year and highlights
+those APT groups that have targeted the US in previ ous campaigns.
+(China)
+APT Group Source
+ 
+UNK_SweetSpecter Artificial Sweetener: SugarGh0st RAT Used to Target  American Artificial Intelligence Experts
+Earth Krahang Earth Krahang  APT campaign targets several government entities w orldwide, including U.S
+UNC5174 Chinese group UNC5174 exploiting ScreenConnect , F5 bugs to attack U.S defense
+Volt Typhoon VOLTZITE Espionage Operations Targeting US Critical  Systems
+Volt Typhoon PRC State-Sponsored Actors Compromise and Maintain Persistent Access to US Critical Infrastructure
+UNC5325
+UNC3886Chinese APT groups exploiting Ivanti vulnerabilitie s to attack US defense industrial base sector
+ 
+(Iran)
+APT Group Source
+ 
+Fox Kitten Iran-based Cyber Actors Enabling Ransomware Attacks  on US Organiz ations
+APT33 APT33 deploys new custom Tickler malware to target federal and state government sectors in the United States and UAE
+Storm-
+2035Disrupting a covert Iranian influence operation tha t uses ChatGPT  to generate content focused on multiple topics, in cluding the US
+presidential campaign
+APT42 Iranian backed group steps up phishing campaigns ag ainst Israel, US
+TA453TA453 utiliz ed BlackSmith  Malware targeting a series of diplomatic and polit ical entities, ranging from embassies in Tehran to US
+political campaigns.
+Mint
+SandstormSandstorm (PHOSPHORUS) targeting high-profile indiv iduals working on Middle Eastern affairs at univers ities and research
+organiz ations in Belgium, France, Gaz a, Israel, the  United Kingdom, and the United States.
+ 
+(Russia)
+APT
+GroupSource
+ 
+Unit 29155 Russian Military Cyber Actors Target US and Global Critical Infrastructure
+COLDRIVERA Russian state-sponsored spear phishing campaign h as been found to be targeting Western and Russian c ivil society targets,
+including nongovernmental organiz ations, independen t media and former US ambassador
+ 
+APT28APT28 using GooseEgg  as part of post-compromise activities against targ ets including Ukrainian, Western European, and Nort h
+American government, non-governmental, education, a nd transportation sector organiz ations
+Russian hackers hijack Ubiquiti routers to launch s tealthy attacks targeting militaries, governments, and other organiz ations
+worldwide
+Pawn Storm Uses Brute Force and Stealth Against Hig h-Value Targets
+ 
+APT29American multinational technology company Microsoft 's actions following attack by nation state actor ' APT29'
+Tech Giant HP Enterprise Hacked by Russian Hackers Linked to DNC Breach
+ 
+(North Korea)
+ APT Group Source
+ 
+Silent
+ChollimaNorth Korean Government Hacker Charged for Involvem ent in Ransomware Attacks Targeting US Hospitals an d Health Care
+Providers
+ APT45 North Korean Hackers Target USA Critical Infrastruc ture and Military Bases
+TA427 TA427 Targeting Experts for Insight into US and the  Republic of Korea (ROK or South Korea) Foreign Pol icy
+ 
+ (Unknown)
+ 
+ State-Sponsored
+Country APT
+GroupSource
+ 
+Unknown TA866 TA866 Returns with a Large Email Campaign Targeting  North America
+LilacSquidLilacsquid  Targets Information Technology Organiz ations Build ing Software for the Research & Industrial
+Sectors in the United States
+Void
+BansheeVoid Banshee Campaign Targets Highly Skilled North American Professionals and Students Who Often Use
+Reference Materials
+TAG-100 TAG-100 Targeted Various Internet-Facing Products i n North America
+ 
+Exploring AI and Disinformation Campaigns in Shapin g Public Opinion
+Threat actors often launch coordinated disinformati on campaigns to spread false narratives, propaganda , and misleading information to
+manipulate public opinion and influence voter behav ior. These campaigns can target social media platfo rms, messaging apps, and online
+forums to spread false information and propaganda.
+ 
+AI-enhanced and AI-generated audio content are beco ming powerful tools in disinformation campaigns, po tentially significantly impacting US
+elections. Deepfake technology, which can create co nvincing audio and video imitations, allows threat actors to fabricate statements,
+speeches, or interviews of political candidates, sp reading false information that can manipulate publi c opinion. Our research has revealed
+advertisements on Darknet platforms offering Deepfa ke services starting at just USD 15. These AI-gener ated disinformation and fake audio
+clips designed to mimic the voices of political fig ures could be circulated widely on social media, ge nerating controversy or altering voter
+behavior.
+ 
+(Deepfake services advertised on darknet)
+AI technology has demonstrated its potential to inf luence public opinion and manipulate voter behavior  in elections. Instances such as the
+mimicking of President Joe Biden's voice in a roboc all during the New Hampshire primary, the circulati on of an AI-generated voice discussing
+false plans by a candidate in Slovakia, the manipul ation of audio clips to falsely implicate candidate s in Nigeria, and the spread of deepfake
+videos in Bangladesh all highlight the impact of AI  in shaping electoral outcomes.
+ 
+To emphasiz e this point, the US Office of the Director of National Intellige nce (ODNI) released a document indicating that Russia, China and Iran
+are increasing their election influence operations using generative AI tools to speed development and reach.
+ 
+Below are some recent disinformation campaigns by v arious threat actors that have targeted the US.
+ 
+State-
+Sponsored
+Group's
+OriginDescription Source
+IranOpenAI banned accounts linked to an Iranian influen ce operation
+using ChatGPT to generate content focused on multip le topics,
+including the US presidential campaign. Disrupting a covert Iranian influence operation
+Multiple
+Threat
+GroupsRussia is deeply invested in undermining US support  for UkraineRussian US election interference targets support fo r Ukraine
+after slow start
+RussiaThe US DOJ seiz ed 32 internet domains used in the “ Doppelganger,”
+campaign to influence US-based persons.Justice Department Disrupts Covert Russian Governme nt-
+Sponsored Foreign Malign Influence Operation Target ing
+Audiences in the United States and Elsewhere
+Russia Russian Disinformation Videos Smear Biden Ahe ad of US ElectionRussian Disinformation Videos Smear Biden Ahead of US
+Election
+ChinaChina is using fake social media accounts to poll v oters on what
+divides them most to sow division and possibly infl uence the
+outcome of the US presidential election in its favo r.China tests US voter fault lines and ramps AI conte nt to boost
+its geopolitical interests
+ChinaCampaign to inpesonate American voters to spread di visive
+naratives ahead of the election.The #Americans - Chinese State-Linked Influence Ope ration
+Spamouflage Masquerades as U.S. Voters to Push Divi sive
+Online Narratives Ahead of 2024 Election
+ 
+This year, on Taiwan’s election day, a sophisticate d threat group 'Storm-1376' posted suspected AI-gen erated audio clips of Foxconn owner
+Terry Gou, an Independent Party candidate in Taiwan ’s presidential race, who bowed out of the contest in November 2023. The audio
+recordings portrayed Gou's voice endorsing another candidate in the presidential race. Gou’s voice in the recordings is likely AI-generated, as
+Gou made no such statement. 
+It's important to highlight that Storm-1376 has a t rack record of conducting disinformation campaigns across different regions and events.
+According to Microsof t , in August 2023, as wildfires raged on the northwe st coast of Maui, Hawaii, Storm-1376 seiz ed the cha nce to spread
+conspiratorial narratives on multiple social media platforms. These posts alleged the US government ha d deliberately set the fires to test a
+military-grade weather weapon. In addition to posti ng the text in at least 31 languages across doz ens of websites and platforms, Storm-1376
+used AI-generated images of burning coastal roads a nd residences to make the content more eye-catching .
+ 
+Based on observed behavior, it's highly likely that  state-sponsored threat actors from China, Russia, and Iran could use similar tactics to target
+the US government and critical infrastructure and c ause disruption during the election process. This p oses a serious threat to election security
+and public trust.
+ 
+Hacktivist Landscape
+There has been a notable increase in cyber hacktivi sm activities this past year, particularly by pro-R ussian groups aimed at disrupting high-
+profile events, such as US elections. These groups have demonstrated significant capabilities in deplo ying distributed denial-of-service (DDoS)
+attacks against critical infrastructure. In May 202 4, the Cybersecurity and Infrastructure Security Ag ency (CISA), in collaboration with Canadian
+and U.K. cybersecurity bodies, issued a joint alert  about a surge in pro-Russian hacktivist activities . These groups targeted small-scale OT
+systems in critical sectors such as water, energy, and agriculture.
+ 
+CyberArmyof Russia_Reborn  (CARR) , a pro-Russian hacktivist group linked to state ac tors, has been particularly active in targeting US and
+European infrastructure. In January 2024, CARR clai med responsibility for manipulating water tanks in Texas, showcasing the group’s ability to
+exploit known vulnerabilities in industrial control  systems (ICS). CARR’s activities extend to low-imp act but persistent DDoS attacks and ICS
+manipulations across various sectors.
+ 
+Based on our observations and their group's previou s campaigns, we have compiled a list of hacktivist groups based on their activities that
+could likely play a pivotal role in disrupting the US elections. The chart represents the most active groups and their activities. 
+(Active hacktivist groups along with their overall activities)
+ 
+The following are the screenshots of cyberattacks o n US-based entities carried out by various hacktivi st groups.
+ (Cyber attacks by hacktivist groups)
+ 
+The chart below represents the campaigns launched b y hacktivist groups primarily targeting US infrastr ucture. GARNESIA_TEAM ,
+FromLammerToMastah , and Z-BL4CX-H4T  are the groups that have performed the most operat ions since January 2024.(Campaigns launched by hacktivist groups targeting the US)
+ 
+Ransomware Landscape
+Ransomware attacks raise concerns about the integri ty and security of sensitive data, including voter information and election results. There's
+also the risk of political manipulation if attacker s choose to selectively target certain government e ntities or election-related systems. 
+ 
+Ransomware attacks targeting government agencies be fore an election can seriously affect the electoral  process and public trust in
+government institutions. Before an election, such a ttacks could disrupt critical government functions related to the electoral process, such as
+voter registration databases, election management s ystems, or communication channels used by election officials. This could lead to delays
+in voter registration, voting process disruptions, and results. 
+ 
+(Top 5 ransomware groups targeting the US in 2024)
+ 
+Over the past eight months, our data indicates that  the US manufacturing sector has been the primary t arget of cyberattacks, followed
+closely by business services and construction. Rans omware groups frequently target multiple sectors to  cause widespread disruption and
+chaos.
+ 
+While examining the shifts in sectoral activity bet ween 2023 and 2024, it’s essential to point out tha t we’ve adjusted the 2023 figures to cover
+just the first eight months. This adjustment ensure s we’re comparing the same timeframe—the first eigh t months of each year—making our
+year-over-year analysis as precise as possible.
+ 
+ 
+(Year-over-year comparison of ransomware victims ta rgeting US-based entities)
+ 
+The graph below provides detailed insights, includi ng victim counts, showing how many victims each ran somware group has targeted in the
+US.
+ (2024 - Victims by top ransomware groups targeting US-based entities)
+ 
+ 
+Vulnerability Landscape
+While not all of these vulnerabilities are being us ed against voters or to target the election, this s ection does highlight the extensive range of
+exploitable vulnerabilities available to those wish ing to do so. Commonly exploited vulnerabilities re present a crucial aspect of the cybersecurity
+landscape. These vulnerabilities, often stemming fr om weaknesses in software, networks, or systems, se rve as prime targets for threat actors
+seeking to exploit them for malicious purposes. Thr eat actors leverage a variety of techniques to expl oit these vulnerabilities, ranging from
+known exploits to newly developed ones, to breach s ystems and gain unauthoriz ed access.
+TAs also continuously monitor security advisories a nd patches released by software vendors to identify  vulnerabilities that users may have not
+yet patched. Once identified, they quickly capitali z e on these vulnerabilities before patches are wide ly implemented, maximiz ing their window
+of opportunity to launch attacks. However, it's als o common for threat actors to exploit old vulnerabi lities using tried and tested methods. In
+2024, 291 unique known vulnerabilities  are reported to be being actively exploited.
+(Exploitation of CVEs)
+Using data on vulnerability exploitation from the p ast eight months, we developed a comparison chart t hat highlights which categories of
+threat actors are actively exploiting different vul nerabilities.
+ 
+(CVE exploitation by threat actor motivation)
+ 
+Conclusion
+The upcoming 2024 US elections face a range of cybe r threats, many of which could have serious implica tions for electoral integrity. Based on
+the current landscape and the recent growth of rela ted dark web activity, state-sponsored actors, hack tivist groups, and cybercriminals may
+likely target election infrastructure and associate d systems. The rise of dark web activities, includi ng the sale of sensitive electoral data,
+combo lists, and network access credentials, sugges ts that malicious actors can leverage these resourc es to disrupt election processes.
+Threats may manifest in various forms, such as cred ential-stuffing attacks, ransomware, or disinformat ion campaigns powered by deepfake
+and AI-generated content to sway public opinion and  undermine voter confidence. With state-sponsored a ctors from China, Russia, and Iran
+likely to play a significant role in these efforts,  it is essential to anticipate and mitigate these r isks through proactive cybersecurity strategies.
+Without adequate defense measures in place, the ele ction process could be vulnerable to manipulation, misinformation, and operational
+disruptions, potentially altering the electoral out come and shaking the public's trust in democratic i nstitutions.
+FortiGuard Labs Threat Research anticipates the fol lowing sectors are at higher risk and prone to cybe rattacks during the US election:
+Political Parties and Candidates : Adversaries may target political parties and cand idates with cyberattacks aimed at stealing
+sensitive information, disrupting campaign activiti es, or spreading disinformation to undermine their credibility. 
+Media Outlets : Adversaries could target media outlets to manipul ate public opinion by spreading false narratives, f abricating
+endorsements, or disseminating misleading informati on to sway voter perceptions. 
+Government Institutions : Adversaries may target government institutions in volved in organiz ing and overseeing elections, such  as
+election commissions and administrative bodies, to disrupt electoral processes, compromise voter regis tration data, or manipulate
+election results. 
+Critical Inf rastructure : Adversaries could target critical infrastructure sectors, such as power grids, transportation networ ks, or
+telecommunications systems, to create chaos and dis rupt the electoral process, potentially leading to voter disenfranchisement or
+logistical challenges. 
+Telecommunications Sector : Adversaries may target telecommunications compani es to disrupt communication networks, intercept
+sensitive communications, or launch cyberattacks to  disrupt voter outreach efforts or manipulate publi c discourse. 
+Technology Organizations : Adversaries may target technology organiz ations, including software companies, IT service providers,  and
+cloud service providers, to steal intellectual prop erty, exploit vulnerabilities, or compromise digita l infrastructure to steal data or show their
+technological prowess. 
+Civil Society : Adversaries may target individuals, such as voter s, campaign volunteers, or influential public figur es, through phishing
+attacks, social engineering tactics, or surveillanc e activities to gather intelligence, manipulate opi nions, or compromise their personal
+information.
+The potential cyberattacks on these various sectors  highlight the multifaceted nature of election secu rity challenges and underscore the
+need for comprehensive cybersecurity measures to sa feguard the integrity of the US election.
+ 
+Recommendations
+FortiGuard Labs Threat Research recommends the foll owing best security practices to safeguard against cyber-attacks:
+Employee Training and Awareness : Conduct regular training sessions for election of ficials, political campaign staff, and volunteers t o
+educate them about the risks of phishing attacks. R aise awareness about common phishing tactics, such as deceptive emails and fake
+websites, and teach employees how to identify and r eport suspicious emails.
+Public Awareness Campaigns : Launch public awareness campaigns to educate vote rs about the risks of phishing attacks and how to
+protect themselves from online threats. Provide gui dance on recogniz ing phishing emails, avoiding susp icious links and attachments,
+and reporting potential phishing attempts to electi on authorities.
+Protect Your Sensitive Data : Organiz ations should make use of SOAR (Security O rchestration, Automation, and Response), which can
+detect unusual activities by privileged users and, if needed, block such activities. With the advent o f ransomware, having complete and
+current backups of all your data can be a lifesaver . Backing up data is one of information security’s best practices that has been gaining
+increased relevance in recent years. A strong backu p strategy also means you are resilient to accident s. NOTE: Don't rely solely on online
+backups, and don't use the same passwords for your production environment and backups. It is always sa fe to have a backup of your
+cloud backup in another offsite backup location. Al l these backups should also be encrypted and should  have access control set.
+Monitor External Attack Surf ace : It is vital to discover IT infrastructures your o rganiz ation is exposed to, and that may be vulnerab le to
+attack. We have commonly seen attackers selling RDP  access and databases by abusing misconfigurations on web servers. Monitoring
+external attack surfaces allows security teams to p rotect their organiz ations from vulnerabilities and  discover unknown assets and
+commonly abused services.
+Enf orce Multi-Factor Authentication and a Strong Pa ssword Policy : We continuously monitor the Darknet for leaked cr edentials of
+organiz ational portals used by employees and regula rly find them compromised and sold on the Darknet. Organiz ations can reduce the
+risk of such exposure by enforcing Multi-Factor Aut hentication and a strong password policy.
+Endpoint Protection : Even the best-trained staff occasionally makes mi stakes. Antivirus and antimalware software installe d on
+computers adds an extra layer of protection, especi ally against phishing attacks and credential steale rs. The best antivirus and
+antimalware programs are only as good as their late st patches. Regularly installing patches will preve nt hackers from exploiting the
+system's weaknesses.
+Patch Operating Systems and Sof tware Regularly : Update software promptly as updates become availa ble. Prioritiz e patching known
+exploited vulnerabilities, especially those CVEs th at are reported as critical and high and that allow  for remote code execution or denial-
+of-service on internet-facing equipment. Implement vendor-approved workarounds if a patch for a known exploited or critical
+vulnerability cannot be quickly applied.
+DDoS Protection : Secure your infrastructure with DDoS attack preve ntion solutions. Equip your network, applications, and infrastructure
+with multi-level protection strategies. This may in clude prevention management systems that combine fi rewalls, VPNs, anti-spam,
+content filtering, and other security layers to mon itor activities and identify traffic inconsistencie s that may be symptoms of DDoS
+attacks.
+Preventing ransomware attacks : Organiz ations must implement proactive measures, including regularly updating software and
+operating systems to patch known vulnerabilities. A dditionally, organiz ations should regularly back up  critical data and ensure that
+backups are stored securely offline to prevent them  from being encrypted by ransomware. User education  and awareness training are
+also essential to help employees recogniz e and avoi d ransomware threats. By taking a multi-layered app roach to ransomware
+prevention, organiz ations can significantly reduce their susceptibility to damaging attacks.
+Website Def acement : Organiz ations should ensure the implementation of  Web Application Firewalls (WAFs) that can provide an
+additional layer of defense by filtering and blocki ng malicious traffic before it reaches the website.
+Stealer Inf ection : Carry out robust threat hunting based on the comp romised account. Check AV/EDR and SIEM logs to iden tify any
+malicious activities. Once an infected system is id entified, isolate it and perform reimaging.
+Threat Intelligence : Cyber Threat Intelligence (CTI) helps enterprises  collect data about current and potential cyber ris ks and determine
+those cyberattacks that can threaten their security . Darknet Threat Intelligence can also help organiz ations monitor any Darknet chatter
+related to the organiz ation or any data leaks that can result in financial losses to the organiz ations  before they are even out in the public.
+Such crucial and time-sensitive data can help organ iz ations handle incidents appropriately and take th e necessary legal steps.
