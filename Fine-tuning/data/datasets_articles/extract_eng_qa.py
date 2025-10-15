@@ -1,7 +1,7 @@
 import json
 
-input_file = "data.jsonl"      # your input file
-output_file = "english.jsonl"  # filtered output file
+input_file = "SAQs_270.jsonl"      # your input file
+output_file = "SAQs_270_english.jsonl"  # filtered output file
 
 with open(input_file, "r", encoding="utf-8") as infile, \
      open(output_file, "w", encoding="utf-8") as outfile:
