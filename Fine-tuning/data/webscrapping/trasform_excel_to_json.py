@@ -21,12 +21,11 @@ df = pd.read_excel("question_answer_pairs_cybersecurity.xlsx")
 df = df.applymap(normalize_text)
 
 # Convert to Alpaca-style JSONL
-with open("cybersecurity_qa.jsonl", "w", encoding="utf-8") as f:
+with open("cybersecurity_qa_united.jsonl", "w", encoding="utf-8") as f:
     for _, row in df.iterrows():
         record = {
-            "instruction": row["Question"],
-            "input": "",
-            "output": row["Answer"]
+            "question": row["Question"],
+            "answer": row["Answer"]
         }
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
