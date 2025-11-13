@@ -15,7 +15,7 @@ BASE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 FINETUNED_MODEL = "mariiazhiv/CyThIA-llama3.1-8B-messages"
 HF_DATASET = "mariiazhiv/Cybersecurity_messages"
 TEST_SPLIT = "validation"
-MAX_TOKENS = 150
+MAX_TOKENS = 280
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 OUTPUT_CSV = "evaluation_chat_results.csv"
 
@@ -81,8 +81,22 @@ def build_prompt(messages):
 # ----------------------
 for i, item in enumerate(dataset):
 
+    #DEBUG
+    if i >= 5:
+        break
+
     messages = item["messages"]
+    # remove the last assistant message if present
+    if messages[-1]["role"] == "assistant":
+        messages = messages[:-1]
     prompt = build_prompt(messages)
+
+    #DEBUG
+    print("\n==========================")
+    print(f"SAMPLE {i+1}")
+    print("==========================")
+    print("PROMPT:\n", prompt)
+
 
     inputs = tokenizer(prompt, return_tensors="pt").to(DEVICE)
 
@@ -91,13 +105,18 @@ for i, item in enumerate(dataset):
         output_ids = model.generate(
             **inputs,
             max_new_tokens=MAX_TOKENS,
-            do_sample=False
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
         )
 
     decoded = tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
     # Extract the newly generated assistant message
     prediction = decoded[len(prompt):].strip()
+
+    #DEBUG
+    print("PREDICTION:\n", prediction)
 
     # Get reference assistant message
     reference = ""
