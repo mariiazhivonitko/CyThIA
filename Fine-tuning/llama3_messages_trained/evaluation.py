@@ -38,7 +38,7 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 
 # ----------------------
-# Resize embeddings if needed
+# Resize embeddings
 # ----------------------
 if model.get_input_embeddings().num_embeddings != len(tokenizer):
     print(f"Resizing embeddings → {len(tokenizer)} tokens")
@@ -66,15 +66,6 @@ smooth_fn = SmoothingFunction().method1
 rouge = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
 results = []
 
-# ---------------------------------------------------------
-# Chat template wrapper for Axolotl llama3 template
-# ---------------------------------------------------------
-def build_prompt(messages):
-    return tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
 
 # ----------------------
 # Evaluation loop
@@ -86,16 +77,21 @@ for i, item in enumerate(dataset):
         break
 
     messages = item["messages"]
-    # remove the last assistant message if present
-    if messages[-1]["role"] == "assistant":
-        messages = messages[:-1]
-    prompt = build_prompt(messages)
+
+    # Get reference assistant message
+    reference = messages[-1]["content"]
+
+    prompt = tokenizer.apply_chat_template(
+        messages[:-1],   # exclude last assistant message
+        tokenize=False,
+        add_generation_prompt=True
+    )
 
     #DEBUG
     print("\n==========================")
     print(f"SAMPLE {i+1}")
-    print("==========================")
     print("PROMPT:\n", prompt)
+    print("REFERENCE:\n", reference)
 
 
     inputs = tokenizer(prompt, return_tensors="pt").to(DEVICE)
@@ -107,23 +103,17 @@ for i, item in enumerate(dataset):
             max_new_tokens=MAX_TOKENS,
             do_sample=True,
             top_p=0.9,
-            temperature=0.7,
+            temperature=0.7
         )
 
-    decoded = tokenizer.decode(output_ids[0], skip_special_tokens=True)
-
-    # Extract the newly generated assistant message
-    prediction = decoded[len(prompt):].strip()
+    # Decode
+    generated_tokens = output_ids[0][inputs["input_ids"].shape[-1]:]
+    prediction = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
 
     #DEBUG
     print("PREDICTION:\n", prediction)
 
-    # Get reference assistant message
-    reference = ""
-    for m in messages:
-        if m["role"] == "assistant":
-            reference = m["content"]
-            break
+
 
     # 1️ Semantic similarity
     emb_pred = embedder.encode(prediction, convert_to_tensor=True)
