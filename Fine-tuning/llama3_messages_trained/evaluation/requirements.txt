@@ -1,0 +1,7 @@
+transformers
+peft
+sentence_transformers
+rouge_score 
+datasets
+bert_score
+hf_transfer

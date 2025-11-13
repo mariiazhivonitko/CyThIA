@@ -72,10 +72,6 @@ results = []
 # ----------------------
 for i, item in enumerate(dataset):
 
-    #DEBUG
-    if i >= 5:
-        break
-
     messages = item["messages"]
 
     # Get reference assistant message
@@ -86,13 +82,6 @@ for i, item in enumerate(dataset):
         tokenize=False,
         add_generation_prompt=True
     )
-
-    #DEBUG
-    print("\n==========================")
-    print(f"SAMPLE {i+1}")
-    print("PROMPT:\n", prompt)
-    print("REFERENCE:\n", reference)
-
 
     inputs = tokenizer(prompt, return_tensors="pt").to(DEVICE)
 
@@ -109,11 +98,6 @@ for i, item in enumerate(dataset):
     # Decode
     generated_tokens = output_ids[0][inputs["input_ids"].shape[-1]:]
     prediction = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
-
-    #DEBUG
-    print("PREDICTION:\n", prediction)
-
-
 
     # 1️ Semantic similarity
     emb_pred = embedder.encode(prediction, convert_to_tensor=True)

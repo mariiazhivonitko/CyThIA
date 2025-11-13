@@ -1,0 +1,7 @@
+==== AVERAGE METRICS ====
+Semantic similarity: 0.5560
+BLEU: 0.0600
+BERTScore F1: 0.3295
+ROUGE-1: 0.3287
+ROUGE-2: 0.1323
+ROUGE-L: 0.2984
