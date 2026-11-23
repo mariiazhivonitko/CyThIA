@@ -1,4 +1,4 @@
-# CyThIA – Conversational Cyber Threat Intelligence Advisor
+# CyThIA – Cyber Threat Intelligence Advisor
 
 **CyThIA** is a research prototype of a conversational AI assistant that answers cybersecurity and cyber threat intelligence (CTI) questions. It was built for my bachelor's thesis *"Designing a Conversational Cyber Threat Advisor Using Domain-Tuned Conversational AI"* (Oulu University of Applied Sciences, in collaboration with the Future Computing Group, University of Oulu, 2026).
 
@@ -105,7 +105,11 @@ python Fine-tuning/evaluation.py
 - **GraphRAG:** I explored Microsoft GraphRAG with locally hosted models (Ollama: phi3 + nomic-embed-text) to add retrieval over CTI reports. The integration did not reach working quality within the thesis timeframe, so it is not part of the final system.
 - **Next steps:** a larger and higher-quality dataset, retrieval-augmented generation (RAG) over up-to-date threat reports, and stronger safety guardrails.
 
+## Acknowledgements
+
+This project was supervised by Prasasthy K B, Future Computing Group, University of Oulu.
+
 ## Author
 
 **Mariia Zhivonitko** – Data & AI | LLM fine-tuning, evaluation, RAG | Oulu, Finland
-<!-- Add your LinkedIn link here -->
+[Mariia Zhivonitko] https://www.linkedin.com/in/mariia-zhivonitko/
