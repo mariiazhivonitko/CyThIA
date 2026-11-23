@@ -16,8 +16,6 @@ The chatbot itself (implementation, deployment, and evaluation with DeepEval usi
 
 ## Overview
 
-<!-- Add a simple architecture diagram here, e.g. images/architecture.png -->
-
 ```
  Web scraping + public CTI datasets
               │
@@ -117,7 +115,6 @@ python Fine-tuning/evaluation.py
 
 ## Experiments & next steps
 
-- **GraphRAG:** I explored Microsoft GraphRAG with locally hosted models (Ollama: phi3 + nomic-embed-text) to add retrieval over CTI reports. The integration did not reach working quality within the thesis timeframe, so it is not part of the final system.
 - **Other training runs:** I also tried training Llama-3.1-8B on a chat "messages" version of the dataset, and tested Mixtral and Flan-T5-XXL. These preliminary runs are in `Fine-tuning/` but are not part of the thesis comparison.
 - **Next steps:** a larger and higher-quality dataset, retrieval-augmented generation (RAG) over up-to-date threat reports, and stronger safety guardrails.
 
