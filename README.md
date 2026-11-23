@@ -111,5 +111,5 @@ This project was supervised by Prasasthy K B, Future Computing Group, University
 
 ## Author
 
-**Mariia Zhivonitko** – Data & AI | LLM fine-tuning, evaluation, RAG | Oulu, Finland
-[Mariia Zhivonitko] https://www.linkedin.com/in/mariia-zhivonitko/
+**Mariia Zhivonitko** – Data & AI | ßLLM fine-tuning, evaluation, RAG | Oulu, Finland
+[Mariia Zhivonitko] (https://www.linkedin.com/in/mariia-zhivonitko/)
