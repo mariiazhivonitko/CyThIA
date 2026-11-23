@@ -6,7 +6,8 @@ The project covers the full pipeline: **dataset creation → LoRA fine-tuning of
 
 > ⚠️ CyThIA is an exploratory prototype for research and learning. It is **not** intended for real-world security decisions or autonomous operations.
 
-🔗 **Chat app:** [chatbot_on_runpod](https://github.com/mariiazhivonitko/chatbot_on_runpod) (Streamlit frontend + FastAPI backend on RunPod)
+🔗 **Thesis (open access):** [Designing a Conversational Cyber Threat Advisor Using Domain-Tuned Conversational AI](https://urn.fi/URN:NBN:fi:amk-202604015472)
+**Chat app:** [chatbot_on_runpod](https://github.com/mariiazhivonitko/chatbot_on_runpod) (Streamlit frontend + FastAPI backend on RunPod)
 🤗 **Datasets on Hugging Face:** [`mariiazhiv/cybersecurity_qa`](https://huggingface.co/datasets/mariiazhiv/cybersecurity_qa) · [`mariiazhiv/Cybersecurity_messages`](https://huggingface.co/datasets/mariiazhiv/Cybersecurity_messages)
 
 ---
