@@ -123,7 +123,7 @@ python Fine-tuning/evaluation.py
 
 ## Acknowledgements
 
-This project was supervised by **Prasasthy K B**, Future Computing Group, University of Oulu.
+This project was supervised by **Prasasthy K Balasubramanian**, Future Computing Group, University of Oulu.
 
 ## Author
 
