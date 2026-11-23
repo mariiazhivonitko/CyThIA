@@ -107,9 +107,10 @@ python Fine-tuning/evaluation.py
 
 ## Acknowledgements
 
-This project was supervised by Prasasthy K B, Future Computing Group, University of Oulu.
+This project was supervised by **Prasasthy K B**, Future Computing Group, University of Oulu.
 
 ## Author
 
-**Mariia Zhivonitko** – Data & AI | ßLLM fine-tuning, evaluation, RAG | Oulu, Finland
-[Mariia Zhivonitko] (https://www.linkedin.com/in/mariia-zhivonitko/)
+**Mariia Zhivonitko** – Data & AI | LLM fine-tuning, evaluation, RAG | Oulu, Finland
+
+[LinkedIn](https://www.linkedin.com/in/mariia-zhivonitko/)
