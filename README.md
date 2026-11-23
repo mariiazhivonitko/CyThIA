@@ -36,7 +36,7 @@ The chatbot itself (implementation, deployment, and evaluation with DeepEval usi
 
 ## Tech stack
 
-Python · Hugging Face Transformers & Datasets · PEFT / LoRA · Axolotl · RunPod (GPU) · Sentence-Transformers · BERTScore · BLEU / ROUGE · Ollama (GraphRAG experiment)
+Python · Hugging Face Transformers & Datasets · PEFT / LoRA · Axolotl · RunPod (GPU) · Sentence-Transformers · BERTScore · BLEU / ROUGE
 
 ## Repository structure
 
